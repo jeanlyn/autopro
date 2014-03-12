@@ -1,0 +1,82 @@
+{% module header() %}
+{% module nav(active=2) %}
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span2">
+				<ul class="nav nav-tabs nav-stacked">
+					{% for item in items %}
+						<li><a data-bind="click:function(){getdata($element)}" class="configurefiles" href="#">{{ item }}</a></li>
+					{% end %}
+				</ul>
+			</div>
+			<div class="span10">
+				<div class="row">
+					<div class="span6 offset2">
+						<form class="form-serach">
+							<input type="text" class="input-medium search-query" placeholder="please input the name to search">
+							<button type="submit" class="btn">查找</button>
+						</form>
+					</div>
+				</div>
+				<div class="row">
+					<form class="form-inline">
+						<input type="text" class="input-medium" placeholder="name">
+						<input type="text" class="input-medium" placeholder="value">
+						<input type="text" class="input-medium" placeholder="description">
+						<button type="submit" class="btn">添加</button>
+					</form>
+				</div>
+				<table class="table">
+					<thead>
+						<tr><th>name</th><th>value</th><th>description</th></tr>
+					</thead>
+					<tbody data-bind="foreach: configures,visible:configures().length>0">
+						<tr>
+							<td><label data-bind="text: name " class="text"></label></td>
+							<td><input data-bind="value: value" type="text" class="input-medium"></td>
+							<td><input data-bind="value: description" type="text" class="input-medium"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
+	<script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
+	<script type="text/javascript">
+		$(function(){
+			$(".nav-stacked li").click(function(){
+				$(".nav-stacked li").each(function(){$(this).attr("class","");});
+				$(this).attr("class","active")
+			});
+		});
+		function configure(key,data){
+			this.name=ko.observable(key);
+			this.value=ko.observable(data['value']);
+			this.description=ko.observable(data['description']);
+			
+		}
+		//viewmodel
+		function confViewModel(){
+			//data
+			var self=this;
+			self.configures=ko.observableArray([]);
+			self.newconfigure=ko.observable();
+
+			//Load data 
+			self.getdata=function(element){
+				paths='/configure/'+$(element).html();
+				self.configures.removeAll();
+				$.getJSON(paths,function(alldata){
+					for( data in alldata){
+						self.configures.push(new configure(data,alldata[data]));
+					}
+					//self.configures(mapconf);
+				});				
+			}			
+		}
+
+		ko.applyBindings(new confViewModel());
+		
+	</script>
+{% module footer()%}

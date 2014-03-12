@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<configuration>
+    <property>
+        <name>123</name>
+        <value>dsaf</value>
+        <description>dsad</description>
+    </property>
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+        <description/>
+    </property>
+    <property>
+        <name>yarn.app.mapreduce.am.staging-dir</name>
+        <value>/user</value>
+        <description/>
+    </property>
+</configuration>
