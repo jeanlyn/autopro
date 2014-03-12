@@ -17,7 +17,7 @@ class configureHandler(tornado.web.RequestHandler):
     def get(self):
         item = os.listdir(os.path.abspath(os.curdir)+'/static/configure')
         self.render("configure.html",title="集市自动化管理",items=item)
-    
+
 
 class configuresHandler(tornado.web.RequestHandler):
     """find the contend in the """
@@ -27,7 +27,22 @@ class configuresHandler(tornado.web.RequestHandler):
         con=HadoopConf(paths)
         dt=con.get()
         self.write(json.dumps(dt))
-        
+    def post(self,filename):
+        try:
+            paths='static/configure/'+filename.split('?')[0]
+            data=json.loads(self.request.body)
+            con=HadoopConf(paths)
+            con.setdt2(data) 
+            self.set_header("Content-Type","application/text")
+            self.set_status(201)
+            self.write("保存成功!")
+        except Exception, e:
+            self.set_header("Content-Type","application/text")
+            self.set_status(201)
+            self.write("出现错误:"+e)
+                
+ 
+   
 
 #setting for application
 settings = {
@@ -48,4 +63,3 @@ application = tornado.web.Application([
 if __name__ == "__main__":
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
-    
