@@ -78,6 +78,30 @@ class HadoopConf():
         with open(self.filename,'w') as f:
             f.write(self.prettify(sroot))
 
+    #handle the dt like {{name:name,value:vaule,descript:descritp}}
+    def setdt2(self,tree):
+        self.dt=tree
+        self.tree=ElementTree.ElementTree(Element(self.TagName,{}))
+        sroot=self.tree.getroot()
+        #print sroot
+        for v in tree:
+            name=Element("name")
+            name.text=str(v["name"])
+            value=Element("value")
+            value.text=str(v['value'])
+            description=Element("description")
+            description.text=str(v['description'])
+            proper=Element("property")
+            proper.append(name)
+            if value.text!= '':
+                proper.append(value)
+            if description.text!='':
+                proper.append(description)
+            sroot.append(proper)
+        #self.tree.write(self.filename)
+        with open(self.filename,'w') as f:
+            f.write(self.prettify(sroot))
+
     def prettify(self,elem):
         rough = ElementTree.tostring(elem,'utf-8')
         reparsed = minidom.parseString(rough)
