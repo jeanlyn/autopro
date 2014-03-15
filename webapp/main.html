@@ -1,4 +1,30 @@
 {% module header() %}
 {% module nav(active=1) %}
+<div class="container">
+    <form action="/" method="post">
+        <div class="span4 offset4">
+            <button id="installinit" class="btn btn-large btn-block" type="button">安装开始</button>
+            {% raw xsrf_form_html() %}
+        </div>
+    </form>
+</div>
 <script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
+<script type="text/javascript">
+    $("#installinit").click(function(){
+        var hname='_xsrf='+$('input[name="_xsrf"]').val();
+        var paths='/?_xsrf='+$('input[name="_xsrf"]').val();
+        $.ajax(paths,{
+                        type:"post",
+                        headers:{"Cookie":hname,"Content-Type":"application/json;charset=UTF-8"},
+                        success:function(result){
+                            if(result=="error"){
+                                dialog("初始化错误!")
+                            }
+                            else{
+                                window.location.href='/hosts'
+                            }
+                        }
+                    });
+    });
+</script>
 {% module footer() %}

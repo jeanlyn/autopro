@@ -1,0 +1,9 @@
+Sat, 15 Mar 2014 16:12:51 web.py[line:1313] INFO 200 GET /hosts (127.0.0.1) 7.47ms
+Sat, 15 Mar 2014 16:12:51 web.py[line:1313] INFO 304 GET /hosts/getdata (127.0.0.1) 12.06ms
+Sat, 15 Mar 2014 16:12:59 web.py[line:1313] INFO 302 POST /hosts/uploadfile (127.0.0.1) 1.49ms
+Sat, 15 Mar 2014 16:12:59 web.py[line:1313] INFO 304 GET /hosts (127.0.0.1) 0.79ms
+Sat, 15 Mar 2014 16:12:59 web.py[line:1313] INFO 200 GET /hosts/getdata (127.0.0.1) 11.19ms
+Sat, 15 Mar 2014 16:44:01 web.py[line:1313] INFO 304 GET / (127.0.0.1) 1.73ms
+Sat, 15 Mar 2014 16:44:02 web.py[line:1313] INFO 200 POST /?_xsrf=32765d2183034313b83fbe29cdb0cd65 (127.0.0.1) 11.89ms
+Sat, 15 Mar 2014 16:44:02 web.py[line:1313] INFO 304 GET /hosts (127.0.0.1) 0.63ms
+Sat, 15 Mar 2014 16:44:02 web.py[line:1313] INFO 304 GET /hosts/getdata (127.0.0.1) 10.14ms

@@ -1,0 +1,148 @@
+{% module header() %}
+{% module nav(active=1) %}
+<div class="container">
+    <form action="/hosts/uploadfile" method="post" enctype="multipart/form-data">
+        <fieldset>
+            <legend>上传hosts文件</legend>
+            <div class="control-group">
+                <input type="file" name="uploadfile">
+                <button type="submit" class="btn" value="upload">上传</button>
+            </div>
+            {% raw xsrf_form_html() %}
+        </fieldset>
+    </form>
+    <form >
+        <fieldset>
+            <legend>操作</legend>
+            <div class="control-group">
+                <input data-bind="value: searchtext" type="text" class="input-large search-query" placeholder="search">
+                <button id="searchbtn" data-bind="click: search" class="btn">查找</button>
+            </div>
+            <div class="control-group">
+                <input data-bind="value: ip" type="text" placeholder="ip">
+                <input data-bind="value: hostname" type="text" placeholder="hostname">
+                <button class="btn" data-bind="click: addormidify">添加或修改</button>
+                
+            </div>     
+            <div>
+                <button class="btn" data-bind="click: init">重置</button>
+                <button class="btn" data-bind="click: save">保存</button>
+            </div>       
+        </fieldset>
+    </form>
+</div>
+<div class="container">
+    <table class="table" data-bind="visible: hostsbind().length>0">
+        <thead>
+            <th>ip</th>
+            <th>hosts</th>
+            <th>delete</th>
+        </thead>
+        <tbody data-bind="foreach: hostsbind">
+            <tr>
+                <td><input data-bind="value: ip" type="text"></td>
+                <td><input data-bind="value: host" type="text"></td>
+                <td><a href="#" data-bind="click: $parent.delete">Delete</a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<ul class="pager">
+    <li><a href="/">上一步</a></li>
+    <li><a href="/clusterunp">下一步</a></li>
+</ul>
+<script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
+<script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
+<script type="text/javascript">
+    $(function(){
+        $(".search-query").typeahead({
+                source:[]
+            });
+        $(".search-query").keypress(function(event){
+            if(event.which==13){
+                $('#searchbtn').click();
+            }
+        });
+    });
+    function hosts(ip,host){
+        this.ip=ko.observable(ip)
+        this.host=ko.observable(host)
+    }
+    function hostModelView(){
+        var self=this;
+        //data
+        self.hostsbind=ko.observableArray([]);
+        self.ip=ko.observable();
+        self.hostname=ko.observable();
+        self.searchtext=ko.observable();
+        //action
+        self.init=function(){
+            self.ip("");
+            self.hostname("");
+            self.searchtext("")
+        }
+        self.delete=function(host){
+            self.hostsbind.remove(host);
+            var source=self.hostsbind().map(function(data){
+                return data.ip()+' '+data.host()
+            });
+            $(".search-query").data('typeahead').source=source;
+        };
+
+        self.search=function(){
+            var searchvalue=self.searchtext().split(' ')
+            self.ip(searchvalue[0]);
+            self.hostname(searchvalue[1]);
+        };
+        self.addormidify=function(){
+            var value=self.hostsbind().filter(function(data){
+                return data.ip()==self.ip()||data.host()==self.hostname();
+            })
+            //modify
+            if(value.length>0){
+                value[0].ip(self.ip());
+                value[0].host(self.hostname());
+            }
+            //add
+            else{
+                self.hostsbind.push(new hosts(self.ip(),self.hostname()));
+            }
+            var source=self.hostsbind().map(function(data){
+                return data.ip()+' '+data.host()
+            });
+            $(".search-query").data('typeahead').source=source;
+        };
+
+        //save
+        self.save=function(){
+            var hname='_xsrf='+$('input[name="_xsrf"]').val();
+            var paths = '/hosts/save'+'?'+hname;
+            $.ajax(paths,{
+                data:ko.toJSON(self.hostsbind),
+                type:"post",
+                headers:{"Cookie":hname,"Content-Type":"application/json;charset=UTF-8"},
+                success:function(result){
+                    dialog(result);
+                }
+            });
+        };
+        //load data
+        $.getJSON('/hosts/getdata',function(datas){
+            if(datas=="error"){
+                dialog("加载数据出错!");
+            }
+            else{
+                var hostarry=$.map(datas,function(data){
+                    return new hosts(data[0],data[1]);
+                });
+                self.hostsbind(hostarry);
+                var source=self.hostsbind().map(function(data){
+                    return data.ip()+' '+data.host()
+                });
+                $(".search-query").data('typeahead').source=source;
+            }
+        });
+    }
+    ko.applyBindings(new hostModelView());
+</script>
+{% module footer() %}

@@ -3,6 +3,12 @@
 <head>
 	<title>{{ title }}</title>
 	<link rel="stylesheet" type="text/css" href="{{ static_url("bootstrap/css/bootstrap.min.css") }}">
+    <script type="text/javascript">
+        function dialog(value){
+            $(".modal-body p").html(value);
+            $("#alertModal").modal("toggle");
+        }
+    </script>
 </head>
 <body>
-	
+	<h1>集市自动化项目</h1>
