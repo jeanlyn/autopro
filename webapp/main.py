@@ -104,7 +104,46 @@ class hostsloadHandler(tornado.web.RequestHandler):
             self.set_header('Content-Type','application/text')
             self.write("error")        
 
-#step 3:add cluster username and password   
+#step 3:add cluster username and password
+class addClusterUsername(tornado.web.RequestHandler):
+    """docstring for addClusterUsername"""
+    def get(self):
+        try:
+            path='tmp/unp'
+            username=''
+            password=''            
+            with open(path,'r') as f:
+                a=f.readline()
+                if a != "":
+                    a=a.strip().split('\t')                    
+                    username=a[0]
+                    password=a[1]
+            self.render("clusterunp.html", title="添加用户以及用户名", user=username, password=password)
+        except Exception, e:
+            print e
+            logging.error(e)
+
+    def post(self):
+        try:
+            path='tmp/unp'
+            username=self.get_argument("username",None)
+            password=self.get_argument("password",None)
+            print username
+            if username and password:
+                with open(path,'w') as f:
+                    f.write(username+'\t'+password)
+                self.redirect('/ChooseInstall')
+
+        except Exception, e:
+            logging.error(e)
+            set_header('Content-Type','application/javascript')
+            self.write("<script>alert('出错了!')</script>")
+       
+#step 4:choose the version of hadoop or the child level project of hadoop to install
+class ChooseInstallHandle(tornado):
+    def get(self):
+        pass
+        
 
 #setting for application
 settings = {
@@ -115,10 +154,12 @@ settings = {
     "xsrf_cookies": True,
 }
 
-#luyou yinshe
+#routing
 application = tornado.web.Application([
     (r"/",MainHandler),
+    (r"/ChooseInstall",ChooseInstallHandle)
     (r"/\?.+",MainHandler),
+    (r"/clusterunp.*",addClusterUsername),
     (r"/hosts",hostsHandler),
     (r"/hosts/(.+)",hostsloadHandler),
     (r"/configure",configureHandler),
