@@ -8,6 +8,7 @@ from tool.hconf import HadoopConf
 from tool.tool import *
 import json
 import logging
+import pickle
 #日志配置
 logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S',filename='web.log',filemode='w')
 
@@ -139,12 +140,44 @@ class addClusterUsername(tornado.web.RequestHandler):
             set_header('Content-Type','application/javascript')
             self.write("<script>alert('出错了!')</script>")
        
-#step 4:choose the version of hadoop or the child level project of hadoop to install
-class ChooseInstallHandle(tornado):
-    def get(self):
-        pass
-        
+#step 4:choose the version of hadoop or the child level project of hadoop such as  to install
+class ChooseInstallHandle(tornado.web.RequestHandler):
+    def get(self):        
+        machines=[{"machine":"ubuntu-64-bit","id":1}]
+        self.render("chooseinstall.html",machines=machines)
 
+#step 4:load data by ajax
+class ChooseAjaxInstall(tornado.web.RequestHandler):
+    def get(self,paramer):
+        projects=[["hadoop-2.2.0","hadoop-cdh4"],["hive-0.8","hive-0.12"]]
+        self.set_header("Content-Type","application/json")
+        self.write(json.dumps(projects))
+
+    def post(self,paramer):
+        data=json.loads(self.request.body)
+        path='tmp/chooseinstall'
+        try:
+            with open(path,'w') as f:
+                pickle.dump(data,f)
+            self.set_header('Content-Type','application/text')
+            self.write('success')
+        except Exception, e:
+            self.set_header('Content-Type','application/test')
+            self.write('error')
+
+#step 5:custom configure 
+class CustomConfigure(tornado.web.RequestHandler):
+    def get(self):
+        self.render('CustomConfigure.html')
+
+#step 6:start install
+class StartInstallHandle(tornado.web.RequestHandler):
+    def get(self):
+        self.render("start.html")
+
+class test(tornado.web.RequestHandler):
+    def get(self):
+        self.render("test.html")
 #setting for application
 settings = {
     "ui_modules":uimodules,
@@ -156,14 +189,17 @@ settings = {
 
 #routing
 application = tornado.web.Application([
-    (r"/",MainHandler),
-    (r"/ChooseInstall",ChooseInstallHandle)
+    (r"/",MainHandler),    
     (r"/\?.+",MainHandler),
     (r"/clusterunp.*",addClusterUsername),
     (r"/hosts",hostsHandler),
     (r"/hosts/(.+)",hostsloadHandler),
     (r"/configure",configureHandler),
     (r'/configure/(.+)',configuresHandler),
+    (r"/ChooseInstall",ChooseInstallHandle),
+    (r"/ChooseInstall/(.+)",ChooseAjaxInstall),
+    (r"/CustomConfigure",CustomConfigure),
+    (r'/test',test),
 ],**settings)
 
 if __name__ == "__main__":

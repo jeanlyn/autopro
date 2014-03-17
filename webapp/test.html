@@ -1,0 +1,26 @@
+{% module header() %}
+{% module nav(active=1) %}
+
+<select size=3 data-bind="
+    options: myItems,
+    optionsText: 'name',
+    optionsValue: 'id',
+    optionsAfterRender: setOptionDisable">
+</select>
+<script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
+<script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
+<script type="text/javascript">
+    var vm = {
+        myItems: [
+            { name: 'Item 1', id: 1, disable: ko.observable(false)},
+            { name: 'Item 3', id: 3, disable: ko.observable(true)},
+            { name: 'Item 4', id: 4, disable: ko.observable(false)}
+        ],
+        setOptionDisable: function(option, item) {
+            ko.applyBindingsToNode(option, {disable: item.disable}, item);
+        }
+    };
+    ko.applyBindings(vm);
+</script>
+
+{% module footer() %}

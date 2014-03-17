@@ -1,0 +1,78 @@
+{% module header() %}
+{% module nav(active=1) %}
+
+<div class="container">
+    <div class="alert alert-info">
+        <h3>step 4:选择要安装的项目</h3>
+    </div>
+    <div class="control-group">
+        <label class="control-label">选择机器版本</label>
+    </div>
+    <div class="controls">
+        <select>
+            {% for machine in machines %}
+                <option value={{ machine['id'] }} >{{ machine['machine'] }}</option>
+            {% end %}
+        </select>
+    </div>
+    <table class="table" data-bind="visible: projects().length>0">
+        <thead>
+            <th>choose</th>
+            <th>project</th>
+        </thead>
+            <tbody data-bind="foreach: projects">
+                <tr>
+                    <td><input type="checkbox" data-bind="checked: check"></td>
+                    <td><select data-bind="options: version, value: values"></select></td>
+                </tr>
+            </tbody>
+    </table>
+    <button class="btn" data-bind="click: save">确定保存</button>
+</div>
+{% raw xsrf_form_html() %}
+
+<ul class="pager">
+    <li><a href="/clusterunp">上一步</a></li>
+    <li><a href="/">下一步</a></li>
+</ul>
+<script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
+<script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
+<script type="text/javascript">
+function project(check,version){
+
+    this.check=ko.observable(check);
+    this.version=ko.observableArray(version);
+    this.values=ko.observable(version[0]);
+}
+function projectViewModel(){
+    var self=this;
+    self.projects=ko.observableArray([]);
+    $.getJSON('/ChooseInstall/loaddata',function(alldata){
+        var pro=$.map(alldata,function(data){
+            return new project(false,data);
+        });
+        self.projects(pro);
+        
+    });
+    self.save=function(){
+        var savedata=self.projects().filter(function(data){
+            return data.check();
+        }).map(function(data){
+            return data.values();
+        });
+        var hname='_xsrf='+$('input[name="_xsrf"]').val();
+        var path='/ChooseInstall/postdata?'+hname
+        $.post(path,JSON.stringify(savedata),function(data){
+            if(data=="success"){
+                dialog("保存成功!")
+            }
+            else{
+                dialog("保存失败!")
+            }
+        });
+    }
+
+}
+ko.applyBindings(new projectViewModel());
+</script>
+{% module footer() %}

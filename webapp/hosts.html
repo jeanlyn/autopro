@@ -1,6 +1,11 @@
 {% module header() %}
 {% module nav(active=1) %}
 <div class="container">
+    <div class="alert alert-info">
+        <h3>step 2:选择上传的hosts文件,也可以在网页上输入或修改
+               上传的文件要以\t作为分隔符:ip host
+        </h3>
+    </div>
     <form action="/hosts/uploadfile" method="post" enctype="multipart/form-data">
         <fieldset>
             <legend>上传hosts文件</legend>

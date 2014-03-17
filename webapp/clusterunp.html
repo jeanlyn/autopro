@@ -1,6 +1,9 @@
 {% module header() %}
 {% module nav(active=1) %}
 <div class="container">
+    <div class="alert alert-info">
+        <h3>step 3:输入集群机子的用户名以及密码</h3>
+    </div>
     <form action="/clusterunp" method="post">        
         <div class="control-group">
             <label class="control-label">用户名</label>
@@ -23,4 +26,8 @@
         {% raw xsrf_form_html() %}
     </form>
 </div>
+<ul class="pager">
+    <li><a href="/hosts">上一步</a></li>
+    <li><a href="/ChooseInstall">下一步</a></li>
+</ul>
 {% module footer() %}
