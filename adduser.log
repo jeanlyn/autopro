@@ -1,2 +1,0 @@
-Tue, 11 Mar 2014 15:54:50 hadoop_user.py[line:22] INFO hdfs dfs -mkdir /user/yihua
-Tue, 11 Mar 2014 15:54:52 hadoop_user.py[line:24] INFO hdfs dfs -chown yihua /user/yihua
