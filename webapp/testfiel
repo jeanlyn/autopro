@@ -1,0 +1,9 @@
+export HADOOP_DEV_HOME=/home/jeanlyn/autopro/webapp/hadoop-2.2.0
+export PATH=/home/jeanlyn/hive-0.11.0/bin:/home/jeanlyn/hadoop-2.2.0/bin:/home/jeanlyn/hadoop-2.2.0/sbin:/usr/java/jdk1.7.0_40/bin:/home/jeanlyn/hive-0.11.0/bin:/home/jeanlyn/hadoop-2.2.0/bin:/home/jeanlyn/hadoop-2.2.0/sbin:/usr/java/jdk1.7.0_40/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/jeanlyn/autopro/webapp/hadoop-2.2.0/bin
+export PATH=/home/jeanlyn/hive-0.11.0/bin:/home/jeanlyn/hadoop-2.2.0/bin:/home/jeanlyn/hadoop-2.2.0/sbin:/usr/java/jdk1.7.0_40/bin:/home/jeanlyn/hive-0.11.0/bin:/home/jeanlyn/hadoop-2.2.0/bin:/home/jeanlyn/hadoop-2.2.0/sbin:/usr/java/jdk1.7.0_40/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/jeanlyn/autopro/webapp/hadoop-2.2.0/sbin
+export HADOOP_MAPARED_HOME=/home/jeanlyn/autopro/webapp/hadoop-2.2.0
+export HADOOP_COMMON_HOME=/home/jeanlyn/autopro/webapp/hadoop-2.2.0
+export HADOOP_HDFS_HOME=/home/jeanlyn/autopro/webapp/hadoop-2.2.0
+export YARN_HOME=/home/jeanlyn/autopro/webapp/hadoop-2.2.0
+export HADOOP_CONF_DIR=/home/jeanlyn/autopro/webapp/hadoop-2.2.0/etc/hadoop
+    

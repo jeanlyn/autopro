@@ -1,0 +1,9 @@
+(dp0
+S'ubuntu-64-bit'
+p1
+(dp2
+S'hadoop-2.2.0'
+p3
+S'../hadoop-2.2.0,tmp/hadoop-2.2.0,tmp/hadoop-2.2.0/etc/hadoop'
+p4
+ss.

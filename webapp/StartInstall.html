@@ -1,4 +1,34 @@
 {% module header() %}
 {% module nav(active=1) %}
-
+<div class="container">
+    <div class="alert alert-info">
+        Step 6:确定安装
+    </div>
+    <button id="install" type="submit" class="btn">安装</button>
+    {% raw xsrf_form_html() %}
+    
+    <div id="process" class="progress progress-striped active">
+        <div class="bar" style="width:0%;"><span id="processnum">0%</span></div>
+    </div>
+    
+  
+</div>
+<script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
+<script type="text/javascript">
+$("#install").click(function () {
+    var hname = '_xsrf='+$('input[name="_xsrf"]').val();
+    var paths = '/StartInstall/'+'?'+hname;             
+    $.ajax(paths,{
+        type:"post",
+        beforSend:function(){
+            $("#process").fadeIn();
+        },
+        timeout:0,
+        headers:{"Cookie":hname,"Content-Type":"application/json;charset=UTF-8"},
+        success:function(result){
+            dialog(result);
+        }
+    });        
+});
+</script>
 {% module footer()%}

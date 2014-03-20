@@ -1,9 +1,10 @@
 {% module header() %}
 {% module nav(active=1) %}
-    <div class="alert alert-info">
-        <h3>Step 5:自定义修改配置文件</h3>
-    </div>
+   
     <div class="container-fluid">
+        <div class="alert alert-info">
+            Step 5:自定义修改配置文件
+        </div>
         <div class="row-fluid">
             <div class="span3">
                 <div class="accordion" id="accordion2">
@@ -53,12 +54,12 @@
                     <form class="form-inline">
                         <div class="control-group">
                             <input data-bind="value: configurename" type="text" class="input-medium" placeholder="name">
-                            <input data-bind="value: configurevalue" type="text" class="input-medium" placeholder="value">
-                            <input data-bind="value: configuredescription" type="text" class="input-medium" placeholder="description">
+                            <input data-bind="value: configurevalue" type="text" class="submitadd input-medium" placeholder="value">
+                            <input data-bind="value: configuredescription" type="text" class="submitadd input-medium" placeholder="description">
                         </div>
                         <div class="control-group">
                             <div class="span2"><button class="btn" data-bind="click: resetinput">重置</button></div>
-                            <div class="span2"><button data-bind="click: addormodify" class="btn">添加或修改</button></div>
+                            <div class="span2"><button id="addormodify" data-bind="click: addormodify" class="btn">添加或修改</button></div>
                             <div class="span2"><button class="btn" data-bind="click: save">保存</button></div>
                             {% raw xsrf_form_html() %}
                         </div>
@@ -90,10 +91,6 @@
     <script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
     <script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
     <script type="text/javascript">
-        function dialog(value){
-            $(".modal-body p").html(value);
-            $("#alertModal").modal("toggle");
-        }
         $(function(){
             $(".nav-stacked li").click(function(){
                 $(".nav-stacked li").each(function(){$(this).attr("class","");});
@@ -107,6 +104,12 @@
                     $('#searchbtn').click();
                 }
             });
+            $(".submitadd").keypress(function(event){
+                if(event.which==13){
+                    $(this).blur();
+                    $("#addormodify").click();
+                }
+            })
         });
         function configure(key,data){
             this.name=ko.observable(key);
