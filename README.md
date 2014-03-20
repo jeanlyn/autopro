@@ -1,6 +1,6 @@
 #AUTOPRO
 ###WHAT'S that?
-1. this is a project for hadoop auto to install easier
+1. this is a project for hadoop to install easier
 2. help us to monitor the cluster convenient
 
 ###THE TEACHNOLOGY USE FOR THE PROJECT
