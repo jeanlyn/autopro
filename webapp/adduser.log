@@ -1,1 +1,66 @@
-Thu, 20 Mar 2014 21:32:11 web.py[line:1313] INFO 200 GET /StartInstall (127.0.0.1) 5.89ms
+Fri, 21 Mar 2014 17:16:10 web.py[line:1635] INFO 200 GET /StartInstall (127.0.0.1) 6.15ms
+Fri, 21 Mar 2014 17:16:12 web.py[line:1635] INFO 304 GET /StartInstall/getprocess (127.0.0.1) 0.46ms
+Fri, 21 Mar 2014 17:16:13 web.py[line:1635] INFO 304 GET /StartInstall/getprocess (127.0.0.1) 0.43ms
+Fri, 21 Mar 2014 17:16:13 web.py[line:1635] INFO 304 GET /StartInstall/getprocess (127.0.0.1) 0.42ms
+Fri, 21 Mar 2014 17:16:14 web.py[line:1635] INFO 304 GET /StartInstall/getprocess (127.0.0.1) 0.43ms
+Fri, 21 Mar 2014 17:16:14 web.py[line:1635] INFO 304 GET /StartInstall/getprocess (127.0.0.1) 0.45ms
+Fri, 21 Mar 2014 17:16:15 web.py[line:1635] INFO 304 GET /StartInstall/getprocess (127.0.0.1) 0.48ms
+Fri, 21 Mar 2014 17:16:15 web.py[line:1635] INFO 304 GET /StartInstall/getprocess (127.0.0.1) 0.59ms
+Fri, 21 Mar 2014 17:16:16 web.py[line:1635] INFO 304 GET /StartInstall/getprocess (127.0.0.1) 0.44ms
+Fri, 21 Mar 2014 17:16:16 web.py[line:1635] INFO 304 GET /StartInstall/getprocess (127.0.0.1) 0.40ms
+Fri, 21 Mar 2014 17:16:17 web.py[line:1635] INFO 304 GET /StartInstall/getprocess (127.0.0.1) 0.49ms
+Fri, 21 Mar 2014 17:16:17 web.py[line:1635] INFO 304 GFri, 21 Mar 2014 17:16:17 asynchandle.py[line:4Fri, 21 Mar 2014 17:16:17 web.py[line:1635] INFO 200 POST /StartInstall/?_xsrf=e25140db32034e979aacd217520953f5 (127.0.0.1) 5701.15ms
+ynchandle.py[line:60] ERROR 192.168.1.2 scp error!
+Fri, 21 Mar 2014 17:16:17 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:16:17 asynchandle.py[line:67] ERROR 192.168.1.2 has failed to install the project
+Fri, 21 Mar 2014 17:16:17 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:16:17 asynchandle.py[line:60] ERROR 192.168.1.3 scp error!
+Fri, 21 Mar 2014 17:16:17 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:16:17 asynchandle.py[line:67] ERROR 192.168.1.3 has failed to install the project
+Fri, 21 Mar 2014 17:16:17 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:16:17 asynchandle.py[line:60] ERROR 192.168.1.4 scp error!
+Fri, 21 Mar 2014 17:16:17 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:16:17 asynchandle.py[line:67] ERROR 192.168.1.4 has failed to install the project
+Fri, 21 Mar 2014 17:16:17 web.py[line:1635] INFO 200 GET /Install (127.0.0.1) 5691.09ms
+Fri, 21 Mar 2014 17:58:39 asynchandle.py[line:48] INFO tar the project success
+Fri, 21 Mar 2014 17:58:43 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:58:43 asynchandle.py[line:60] ERROR 192.168.1.2 scp error!
+Fri, 21 Mar 2014 17:58:43 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:58:43 asynchandle.py[line:67] ERROR 192.168.1.2 has failed to install the project
+Fri, 21 Mar 2014 17:58:43 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:58:43 asynchandle.py[line:60] ERROR 192.168.1.3 scp error!
+Fri, 21 Mar 2014 17:58:43 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:58:43 asynchandle.py[line:67] ERROR 192.168.1.3 has failed to install the project
+Fri, 21 Mar 2014 17:58:43 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:58:43 asynchandle.py[line:60] ERROR 192.168.1.4 scp error!
+Fri, 21 Mar 2014 17:58:43 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 17:58:43 asynchandle.py[line:67] ERROR 192.168.1.4 has failed to install the project
+Fri, 21 Mar 2014 17:58:43 web.py[line:1635] INFO 200 GET /Install (127.0.0.1) 9008.89ms
+Fri, 21 Mar 2014 18:03:24 asynchandle.py[line:48] INFO tar the project success
+Fri, 21 Mar 2014 18:03:24 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:03:24 asynchandle.py[line:60] ERROR 192.168.1.2 scp error!
+Fri, 21 Mar 2014 18:03:24 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:03:24 asynchandle.py[line:67] ERROR 192.168.1.2 has failed to install the project
+Fri, 21 Mar 2014 18:03:24 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:03:24 asynchandle.py[line:60] ERROR 192.168.1.3 scp error!
+Fri, 21 Mar 2014 18:03:24 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:03:24 asynchandle.py[line:67] ERROR 192.168.1.3 has failed to install the project
+Fri, 21 Mar 2014 18:03:24 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:03:24 asynchandle.py[line:60] ERROR 192.168.1.4 scp error!
+Fri, 21 Mar 2014 18:03:24 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:03:24 asynchandle.py[line:67] ERROR 192.168.1.4 has failed to install the project
+Fri, 21 Mar 2014 18:03:24 web.py[line:1635] INFO 200 GET /Install (127.0.0.1) 5628.43ms
+Fri, 21 Mar 2014 18:06:32 asynchandle.py[line:48] INFO tar the project success
+Fri, 21 Mar 2014 18:06:32 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:06:32 asynchandle.py[line:60] ERROR 192.168.1.2 scp error!
+Fri, 21 Mar 2014 18:06:32 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:06:32 asynchandle.py[line:67] ERROR 192.168.1.2 has failed to install the project
+Fri, 21 Mar 2014 18:06:32 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:06:32 asynchandle.py[line:60] ERROR 192.168.1.3 scp error!
+Fri, 21 Mar 2014 18:06:32 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:06:32 asynchandle.py[line:67] ERROR 192.168.1.3 has failed to install the project
+Fri, 21 Mar 2014 18:06:32 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:06:32 asynchandle.py[line:60] ERROR 192.168.1.4 scp error!
+Fri, 21 Mar 2014 18:06:32 tool.py[line:12] ERROR there is someting wrong:
+Fri, 21 Mar 2014 18:06:32 asynchandle.py[line:67] ERROR 192.168.1.4 has failed to install the project
+Fri, 21 Mar 2014 18:06:32 web.py[line:1635] INFO 200 GET /Install (127.0.0.1) 5632.28ms

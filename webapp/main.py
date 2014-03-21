@@ -1,6 +1,9 @@
 #encoding=UTF-8
 import tornado.ioloop
 import tornado.web
+import tornado.httpserver
+import tornado.httpclient
+import tornado.gen
 import os
 import uimodules
 import sys
@@ -9,6 +12,8 @@ from tool.tool import *
 import json
 import logging
 import pickle
+
+
 #日志配置
 logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S',filename='web.log',filemode='w')
 
@@ -305,56 +310,34 @@ class StartInstallHandle(tornado.web.RequestHandler):
         except Exception ,e:
             logging.error(e)
 
+#step 6:start install by ajax
 class StartInstallAjax(tornado.web.RequestHandler):
     def get(self):
-        pass
-    def post(self):
-        try:
-            choosepath='tmp/chooseinstall'
-            packegpath='tmp/paths'
-            hostspath='tmp/hosts'
-            unppath='tmp/unp'
-            zipdir='tmp/project.tar.gz '
-            zipproject='project.tar.gz'
-            totals=0
-            finish=0
-            #read the install project
-            with open(choosepath,'r') as f:
-                chooseinstall=pickle.load(f)
-
-            with open(packegpath,'r') as f:
-                packetsp=pickle.load(f)
-
-            with open(hostspath,'r') as f:
-                hosts= [i.split('\t') for i in f.read().split('\n')]
-
-            with open(unppath,'r') as f:
-                unp=f.read().strip('\n').split('\t')
-
-            #tar scp ssh untar
-            totals= len(hosts)*2+1
-            prodir = [packetsp[chooseinstall[-1]][x].split(',')[1] for x in chooseinstall[0:-1]]
-            cmds='tar -zcf '+ zipdir+' '.join(prodir)+' '+'tmp/confclientpath.sh'
-            clientrun='sh confclientpath.sh '+' '.join(chooseinstall[0:-1])
-            if runshcommand(cmds) is not None:
-                logging.info('tar the project success')
-                finish+=1
-                runshcommand('echo '+str(finish/totals*100)+' >done')
-
-            #scp and ssh untar and stepup the project
-            for x in hosts:
-                cmds='scp '+zipdir+unp[0]+'@'+x[0]+':~/ 2>>'+x[0]+'.error'
-                if runshcommand(cmds) is not None:
-                    finish+=1
-                cmds='ssh '+unp[0]+'@'+x[0]+' "tar -zxvf '+ zipproject +' && '+clientrun+'" 2>>'+x[0]+'.error'
-                if runshcommand(cmds) is not None:
-                    finish+=1
-                logging.info(x[0]+" has finish install the project")
-            self.set_header("Content-Type","application/json")
-            self.write("success")
+        self.set_header("Content-Type","application/text")
+        try:            
+            with open("done",'r') as f:
+                data=f.read().strip()
+                self.write(data)
 
         except Exception ,e:
-            logging.error(e)
+            logging(e)
+            self.write("0")
+
+    @tornado.web.asynchronous
+    @tornado.gen.engine
+    def post(self):
+        self.set_header("Content-Type","application/text")
+        try:
+            clien=tornado.httpclient.AsyncHTTPClient()
+            response= yield tornado.gen.Task(clien.fetch,"http://localhost:8887/Install")
+            self.write("install "+response.body)
+            self.finish()
+        
+        except Exception ,e:
+            self.write("install error")
+            
+
+
 
 class test(tornado.web.RequestHandler):
     def get(self):
@@ -383,7 +366,7 @@ application = tornado.web.Application([
     (r"/CustomConfigure",CustomConfigure),
     (r"/CustomConfigure/([^/]+)/(.+)",CustomConfigureAjax),
     (r"/StartInstall",StartInstallHandle),
-    (r"/StartInstall/.+",StartInstallAjax),
+    (r"/StartInstall.+",StartInstallAjax),
     (r'/test',test),
 ],**settings)
 

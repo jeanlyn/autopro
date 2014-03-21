@@ -4,29 +4,62 @@
     <div class="alert alert-info">
         Step 6:确定安装
     </div>
-    <button id="install" type="submit" class="btn">安装</button>
-    {% raw xsrf_form_html() %}
-    
-    <div id="process" class="progress progress-striped active">
-        <div class="bar" style="width:0%;"><span id="processnum">0%</span></div>
+    <button id="install" type="submit" class="btn" data-loading-text="安装中...">安装</button>    
+    <div class="border-box" style="display:none">
+        <h2>安装进度:</h2>
+        <div id="process" class="progress progress-striped active" >
+            <div id="bar" class="bar" style="width:0%;"><span id="processnum">0%</span></div>
+        </div>
     </div>
-    
-  
+    <form>
+        {% raw xsrf_form_html() %}
+    </form>
 </div>
 <script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
 <script type="text/javascript">
+var getTheprocess=function(){
+    var paths = '/StartInstall/getprocess';
+    var interval;
+    $.ajax(paths,{
+        type:"get",
+        success:function(data){
+            if((+data)>=0&&(+data)<100){
+                $("#bar").attr("style","width:"+data+"%");
+                $("#processnum").html(data+"%");
+            }
+            else{
+                clearInterval(interval);
+                $("#bar").attr("style","width:0%");
+                $("#processnum").html("0%");
+
+            }
+        }
+    });
+}
+
 $("#install").click(function () {
     var hname = '_xsrf='+$('input[name="_xsrf"]').val();
-    var paths = '/StartInstall/'+'?'+hname;             
+    var paths = '/StartInstall/'+'?'+hname;
+    $(".border-box").fadeIn();
+    $("#install").button("loading");
+    interval=setInterval(getTheprocess,500);             
     $.ajax(paths,{
         type:"post",
-        beforSend:function(){
-            $("#process").fadeIn();
-        },
         timeout:0,
-        headers:{"Cookie":hname,"Content-Type":"application/json;charset=UTF-8"},
-        success:function(result){
+        headers:{"Content-Type":"application/json;charset=UTF-8"},
+        success:function(result){ 
+            if(result.indexOf("error")!=-1){
+                $("#bar").attr("style","width:0%");
+                $("#processnum").html("0%");
+            }           
+            $("#install").button("reset");
             dialog(result);
+            clearInterval(interval);
+        },
+        error:function(data){
+            console.log(data);
+            $("#install").button("reset");
+            clearInterval(interval);
         }
     });        
 });

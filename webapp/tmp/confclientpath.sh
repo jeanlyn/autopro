@@ -3,6 +3,11 @@ if [ $# -lt 1 ];then
     echo "[Error]:need at least one arguments";
     exit 1
 fi
+
+if [ -d tmp ];then
+    cp -r tmp/* .
+fi
+
 #hadoop2.2.0 confi
 hadoopconf()
 {

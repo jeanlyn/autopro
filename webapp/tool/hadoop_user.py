@@ -5,7 +5,7 @@ import commands
 import logging
 from hconf import HadoopConf as HC
 #日志配置
-logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S',filename='adduser.log',filemode='w')
+logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S',filename='web.log',filemode='w')
 #返回数值说明[1:成功添加用户，-1用户目录已经存在，-2用户已经存在,-3：传入参数有误]
 def adduser(username):
     if username == '':
