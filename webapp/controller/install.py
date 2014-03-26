@@ -7,8 +7,17 @@ import tornado.httpserver
 import tornado.httpclient
 import tornado.gen
 import sys
-import logging
-logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S',filename='web.log',filemode='w')
+import pickle
+import json
+from tool.log import *
+from tool.tool import *
+from models.installmodel import *
+
+logging=getlog('install','install.log')
+
+class Login(tornado.web.RequestHandler):
+    def get(self):
+        self.render("login.html")
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):
@@ -17,7 +26,6 @@ class MainHandler(tornado.web.RequestHandler):
             self.render("main.html",title="集市自动化管理",item=item)
         except Exception ,e:
             logging.error(e)
-            print e
 
     def post(self):
         try:
@@ -52,7 +60,6 @@ class configuresHandler(tornado.web.RequestHandler):
     def post(self,filename):
         try:
             paths='static/configure/'+filename.split('?')[0]
-            data=json.loads(self.request.body)
             con=HadoopConf(paths)
             con.setdt2(data) 
             self.set_header("Content-Type","application/text")
@@ -63,14 +70,41 @@ class configuresHandler(tornado.web.RequestHandler):
             self.set_header("Content-Type","application/text")
             self.set_status(201)
             self.write(e)
+
+#create cluster
+class createcluster(tornado.web.RequestHandler):
+    def get(self):
+        self.render("ctcluster.html")
+    def post(self):
+        try:
+            self.set_header('Content-Type','application/text')
+            #data=json.loads(self.request.body)
+            clustername=str(self.get_argument("clustername","")).strip()
+            clusteradress=str(self.get_argument("address","")).strip()
+            clusters=cluster()
+            if clustername == "" or clusteradress == "":
+                self.write("输入不能为空值")        
+            elif clusters.incluster(clustername):
+                self.write('集群已经存在!')
+            else:   
+                clusters.addcluster(clustername,clusteradress)
+                self.set_secure_cookie("crtcluster",clustername)
+
+                self.write('添加成功!')
+                logging.info('add success')
+        except Exception, e:
+            self.set_header('Content-Type','application/text')
+            self.write('添加出错!')
+            logging.error(e)
+
 #step 2: add host                
 class hostsHandler(tornado.web.RequestHandler):
     def get(self):
-        try:
+        if self.get_secure_cookie("crtcluster") is None:
+            self.render("error.html",erroinfo="你还没有创建集群!",dirhref="/")
+        else:
             self.render("hosts.html",title="添加hosts")
-        except Exception, e:
-            logging.error(e)
-        
+       
     def post(self):
         pass
 
@@ -147,7 +181,7 @@ class addClusterUsername(tornado.web.RequestHandler):
             logging.error(e)
             set_header('Content-Type','application/javascript')
             self.write("<script>alert('出错了!')</script>")
-       
+
 #step 4:choose the version of hadoop or the child level project of hadoop such as  to install
 class ChooseInstallHandle(tornado.web.RequestHandler):
     def get(self):        
@@ -330,3 +364,4 @@ class StartInstallAjax(tornado.web.RequestHandler):
         
         except Exception ,e:
             self.write("install error")
+

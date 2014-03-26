@@ -1,0 +1,11 @@
+{% module header() %}
+{% module nav(active=1) %}
+<script type="text/javascript">
+    $(function(){
+        dialog("{{ erroinfo }}");
+        $('#dialogbtn').click(function(){
+            window.location.href="{{ dirhref if dirhref is not None else '/' }}";
+        });
+    });
+</script>
+{% module footer() %}

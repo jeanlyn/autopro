@@ -1,0 +1,54 @@
+{% module header() %}
+{% module nav(active=1) %}
+<div class="container">
+    <div class="alert alert-info">
+        输入集群的名字以及agent的地址
+    </div>
+    <form id="createcluster">
+        <div class="control-group">
+            <div class="controls">
+                <input type="text" class="input" name="clustername" placeholder="输入集群的名字" data-toggle="popover" data-placement="right" data-content="集群名字不能为空!">
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <input type="text" class="input" name="address" placeholder="agent地址" data-toggle="popover" data-placement="right" data-content="集群的地址不能为空!">
+            </div>
+        </div>        
+        {% raw xsrf_form_html() %}
+    </form>
+    <button class="btn" id="submitform">提交</button>
+</div>
+<script type="text/javascript">
+$("input[type=text]").each(function(){
+    $(this).focus(function(){
+        $(this).popover("destroy");
+    }).blur(function(){
+        if($.trim($(this).val())==""){
+            $(this).popover("show");
+        }
+    });
+});
+$('#submitform').click(function(){
+    var can=true;
+    $("input[type=text]").each(function(){
+        if($.trim($(this).val())==""){
+            can=false;
+        }
+    });
+    if(can==true){
+        $.post('/CreateCluster',$("#createcluster").serialize(),function(data){
+            if(data=="添加成功!"){
+                $("#dialogbtn").click(function(){
+                    window.location.href='/hosts'
+                });
+            }
+            dialog(data);
+        });
+    }
+    else{
+        dialog("不能输入空字符串!")
+    }
+});
+</script>
+{% module footer() %}

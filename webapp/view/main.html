@@ -2,32 +2,19 @@
 {% module nav(active=1) %}
 <div class="container">
     <div class="alert alert-info">
-        step 1:初始化安装
+        选择操作:安装或者修改
     </div>
     <form action="/" method="post">
         <div class="span4 offset4">
-            <button id="installinit" class="btn btn-large btn-block" type="button">安装开始</button>
+            <button id="installinit" class="btn btn-large btn-block" type="button">安装新集群</button>
+            <button id="installinit" class="btn btn-large btn-block" type="button">管理修改</button>
             {% raw xsrf_form_html() %}
         </div>
     </form>
 </div>
-<script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
 <script type="text/javascript">
     $("#installinit").click(function(){
-        var hname='_xsrf='+$('input[name="_xsrf"]').val();
-        var paths='/?_xsrf='+$('input[name="_xsrf"]').val();
-        $.ajax(paths,{
-            type:"post",
-            headers:{"Cookie":hname,"Content-Type":"application/json;charset=UTF-8"},
-            success:function(result){
-                if(result=="error"){
-                    dialog("初始化错误!")
-                }
-                else{
-                    window.location.href='/hosts'
-                }
-            }
-        });
+        window.location.href='/CreateCluster'
     });
 </script>
 {% module footer() %}

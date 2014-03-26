@@ -1,19 +1,12 @@
 #encoding=UTF-8
-
 import os
 import uimodules
 import sys
 from tool.hconf import HadoopConf
 from tool.tool import *
-from view import *
 from controller.install import *
 import json
-import logging
 import pickle
-
-
-#日志配置
-logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S',filename='web.log',filemode='w')
 
 #setting for application
 settings = {
@@ -40,6 +33,8 @@ application = tornado.web.Application([
     (r"/CustomConfigure/([^/]+)/(.+)",CustomConfigureAjax),
     (r"/StartInstall",StartInstallHandle),
     (r"/StartInstall.+",StartInstallAjax),
+    (r"/CreateCluster.*",createcluster),
+    (r"/login",Login),
 ],**settings)
 
 if __name__ == "__main__":

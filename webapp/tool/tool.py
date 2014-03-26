@@ -2,9 +2,9 @@
 import os
 import re
 import commands
-import logging
+
 #日志配置
-logging.basicConfig(level=logging.DEBUG,format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',datefmt='%a, %d %b %Y %H:%M:%S',filename='web.log',filemode='w')
+
 
 def runshcommand(cmd):
     status,result=commands.getstatusoutput(cmd)
