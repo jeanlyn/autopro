@@ -89,9 +89,11 @@ class createcluster(tornado.web.RequestHandler):
             else:   
                 clusters.addcluster(clustername,clusteradress)
                 self.set_secure_cookie("crtcluster",clustername)
-
-                self.write('添加成功!')
-                logging.info('add success')
+                if runshcommand("sh clurterinit.sh "+clustername) is not None:
+                    self.write('添加成功!')
+                    logging.info('add success')
+                else:
+                    self.write("添加出错!")
         except Exception, e:
             self.set_header('Content-Type','application/text')
             self.write('添加出错!')
@@ -115,36 +117,37 @@ class hostsloadHandler(tornado.web.RequestHandler):
     """
     def get(self,paramer):
         try:
-            hosts=readhosts()
+            hostsm=hostsmodel(self.get_secure_cookie("crtcluster"))
+            hosts=hostsm.hosts
             self.set_header("Content-Type","application/json")
             self.write(json.dumps(hosts))
 
         except Exception, e:
-            print(e)
             logging.error(e)
             self.set_header("Content-Type","application/text")
             self.write("error")
 
     def post(self,paramer):
         action=paramer.split('?')[0]
-        path='tmp/hosts'
+        self.set_header('Content-Type','application/text')
+        if self.get_secure_cookie("crtcluster") is None:
+            self.write("你还没有创建集群!")
+            return
+        hostm=hostsmodel(self.get_secure_cookie("crtcluster"))
         try:
             if action == 'save':
                 data=json.loads(self.request.body)
                 string='\n'.join(['\t'.join(x.values()) for x in data])
-                with open(path,'w') as f:
-                    f.write(string)
-                self.set_header('Content-Type','application/text')
+                hostm.save(string)
+                
                 self.write("success")
             else :
                 if self.request.files.get('uploadfile',None):
                     uploadfile=self.request.files['uploadfile'][0]
-                    with open(path,'w') as f:
-                        f.write(uploadfile['body'])
+                    hostm.save(uploadfile['body'])
                 self.redirect('/hosts')
         except Exception, e:
             logging.error(e)
-            self.set_header('Content-Type','application/text')
             self.write("error")        
 
 #step 3:add cluster username and password
@@ -184,25 +187,28 @@ class addClusterUsername(tornado.web.RequestHandler):
 
 #step 4:choose the version of hadoop or the child level project of hadoop such as  to install
 class ChooseInstallHandle(tornado.web.RequestHandler):
-    def get(self):        
-        machines=[{"machine":"ubuntu-64-bit","id":1}]
-        self.render("chooseinstall.html",machines=machines)
+    def get(self):
+        if self.get_secure_cookie("crtcluster") is None:
+            self.render("error.html",erroinfo="你还没有创建集群!",dirhref="/")
+        else:
+            machinesm=machinemodel(self.get_secure_cookie("crtcluster"))        
+            self.render("chooseinstall.html",machines=machinesm.machines)
 
 #step 4:load data by ajax
 class ChooseAjaxInstall(tornado.web.RequestHandler):
     def get(self,paramer):
-        projects=[["hadoop-2.2.0","hadoop-cdh4"],["hive-0.8","hive-0.12"]]
+        projectm=projectmodel(self.get_secure_cookie("crtcluster"))
         self.set_header("Content-Type","application/json")
-        self.write(json.dumps(projects))
+        self.write(json.dumps(projectm.projects))
 
     def post(self,paramer):
         data=json.loads(self.request.body)
-        path='tmp/chooseinstall'
+        installpm=installpmodel(self.get_secure_cookie("crtcluster"))
         packegpath='tmp/paths'
         self.set_header('Content-Type','application/text')
         try:
-            with open(path,'w') as f:
-                pickle.dump(data,f)
+            #save data to promodel
+            installpm.save(data)
             with open(packegpath,'r') as f:
                 pathsofpack=pickle.load(f)
             if packegpath is not None:

@@ -4,8 +4,6 @@ import re
 import commands
 
 #日志配置
-
-
 def runshcommand(cmd):
     status,result=commands.getstatusoutput(cmd)
     if status !=0 :

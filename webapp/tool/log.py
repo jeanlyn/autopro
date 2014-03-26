@@ -1,7 +1,7 @@
 #encoding=UTF-8
 import logging
 def getlog(loggername,loggerfile):
-    logger = logging.getLogger('mylogger')
+    logger = logging.getLogger(loggername)
     logger.setLevel(logging.DEBUG)
     # 创建一个handler，用于写入日志文件
     fh = logging.FileHandler(loggerfile)

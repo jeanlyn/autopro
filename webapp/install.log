@@ -18,3 +18,11 @@
 2014-03-26 15:20:41,317 install.py[line:120] ERROR global name 'readhosts' is not defined
 2014-03-26 16:18:44,803 install.py[line:92] INFO add success
 2014-03-26 16:18:46,612 install.py[line:122] ERROR global name 'readhosts' is not defined
+2014-03-26 17:39:55,158 install.py[line:126] ERROR this constructor takes no arguments
+2014-03-26 17:44:04,404 install.py[line:126] ERROR this constructor takes no arguments
+2014-03-26 17:45:22,051 install.py[line:127] ERROR this constructor takes no arguments
+2014-03-26 17:51:51,680 install.py[line:127] ERROR global name 'runshcommand' is not defined
+2014-03-26 17:53:29,698 install.py[line:127] ERROR global name 'hosts' is not defined
+2014-03-26 17:54:34,811 install.py[line:122] INFO [['']]
+2014-03-26 17:54:53,304 install.py[line:122] INFO [['192.168.1.2', 'jeanlyn'], ['192.168.1.3', 'tsw'], ['192.168.1.4', 'zhangyubiao']]
+2014-03-26 18:01:29,913 install.py[line:122] INFO [['192.168.1.2', 'jeanlyn'], ['192.168.1.3', 'tsw'], ['192.168.1.4', 'zhangyubiao'], ['192', 'ddasds']]

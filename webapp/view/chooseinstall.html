@@ -3,7 +3,7 @@
 
 <div class="container">
     <div class="alert alert-info">
-        step 4:选择要安装的项目
+        选择要安装的项目
     </div>
     <div class="control-group">
         <label class="control-label">选择机器版本</label>
@@ -19,10 +19,12 @@
         <thead>
             <th>choose</th>
             <th>project</th>
+            <th>version</th>
         </thead>
             <tbody data-bind="foreach: projects">
                 <tr>
                     <td><input type="checkbox" data-bind="checked: check"></td>
+                    <td><label data-bind="text: project"></label></td>
                     <td><select data-bind="options: version, value: values"></select></td>
                 </tr>
             </tbody>
@@ -38,9 +40,9 @@
 <script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
 <script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
 <script type="text/javascript">
-function project(check,version){
-
+function project(check,version,project){
     this.check=ko.observable(check);
+    this.project=project
     this.version=ko.observableArray(version);
     this.values=ko.observable(version[0]);
 }
@@ -48,11 +50,9 @@ function projectViewModel(){
     var self=this;
     self.projects=ko.observableArray([]);
     $.getJSON('/ChooseInstall/loaddata',function(alldata){
-        var pro=$.map(alldata,function(data){
-            return new project(false,data);
-        });
-        self.projects(pro);
-        
+        for(a in alldata){
+            self.projects.push(new project(false,alldata[a],a));
+        }        
     });
     self.save=function(){
         var savedata=self.projects().filter(function(data){

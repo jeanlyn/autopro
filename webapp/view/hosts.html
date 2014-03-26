@@ -54,9 +54,8 @@
 </div>
 <ul class="pager">
     <li><a href="/">上一步</a></li>
-    <li><a href="/clusterunp">下一步</a></li>
+    <li><a href="/ChooseInstall">下一步</a></li>
 </ul>
-<script type="text/javascript" src="{{ static_url("bootstrap/js/jquery-1.11.0.min.js") }}"></script>
 <script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
 <script type="text/javascript">
     $(function(){
@@ -125,7 +124,7 @@
             $.ajax(paths,{
                 data:ko.toJSON(self.hostsbind),
                 type:"post",
-                headers:{"Cookie":hname,"Content-Type":"application/json;charset=UTF-8"},
+                headers:{"Cookie":document.cookie,"Content-Type":"application/json;charset=UTF-8"},
                 success:function(result){
                     dialog(result);
                 }
