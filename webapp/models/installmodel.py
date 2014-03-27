@@ -79,3 +79,15 @@ class installpmodel():
         except Exception, e:
             logger.error(e)
     
+#needto edit the property self.packagepath when add project
+class packagepathmodel():
+    def __init__(self,cluster):
+        self.datapath="models/data/packagepath"
+        self.cluster=cluster
+        #rule:{machine:{project:repodir,cptodir,confdir}}
+        self.packagepath={'ubuntu-64-bit':
+                           {
+                                'hadoop-2.2.0':'../repo/hadoop-2.2.0,cluster/'+cluster+'/hadoop-2.2.0,cluster/'+cluster+'/hadoop-2.2.0/etc/hadoop',
+                                'bashrc':'../repo/.bashrc,cluster/'+cluster+'/.bashrc,cluster/'+cluster+'/'
+                           }
+                         }

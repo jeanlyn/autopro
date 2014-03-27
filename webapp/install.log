@@ -26,3 +26,13 @@
 2014-03-26 17:54:34,811 install.py[line:122] INFO [['']]
 2014-03-26 17:54:53,304 install.py[line:122] INFO [['192.168.1.2', 'jeanlyn'], ['192.168.1.3', 'tsw'], ['192.168.1.4', 'zhangyubiao']]
 2014-03-26 18:01:29,913 install.py[line:122] INFO [['192.168.1.2', 'jeanlyn'], ['192.168.1.3', 'tsw'], ['192.168.1.4', 'zhangyubiao'], ['192', 'ddasds']]
+2014-03-27 10:32:01,410 install.py[line:240] ERROR 
+2014-03-27 10:39:04,601 install.py[line:240] ERROR global name 'get_secure_cookie' is not defined
+2014-03-27 10:40:36,544 install.py[line:262] ERROR 
+2014-03-27 10:40:38,528 install.py[line:262] ERROR 
+2014-03-27 10:43:41,718 install.py[line:260] ERROR global name 'HadoopConf' is not defined
+2014-03-27 10:44:55,972 install.py[line:260] ERROR global name 'HadoopConf' is not defined
+2014-03-27 10:45:04,154 install.py[line:260] ERROR global name 'HadoopConf' is not defined
+2014-03-27 10:45:05,948 install.py[line:260] ERROR global name 'HadoopConf' is not defined
+2014-03-27 13:44:30,767 install.py[line:266] ERROR not well-formed (invalid token): line 1, column 1
+2014-03-27 15:19:59,825 install.py[line:273] ERROR local variable 'packetsp' referenced before assignment

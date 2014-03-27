@@ -1,0 +1,45 @@
+{% module header() %}
+{% module nav(active=1) %}
+<div class="container">
+    <form>
+        <h4>上传文件</h4>
+        <div class="controls">
+            <input type="file" name="uploadfile">
+            <button type="submit" class="btn" value="upload">上传</button>
+        </div>
+    </form>
+    <table>
+        <thead>
+            <th>name</th>
+            <th>operation</th>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<input type="hidden" id="path" value="/loadfiles/{{ projectname }}">
+<script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
+<script type="text/javascript">
+function fileordir(){
+    //arguments[0]:isdir,arguments[1]
+    this.isdir=isdir;
+    this.name=arguments[1];
+    if(isdir){   
+        this.href=arguments[2];
+    }
+}
+function fileordirViewMode(){
+    self=this;
+    self.names=ko.observableArray();
+
+    //loaddatath
+    var requestpath=$("#path").val()+'/loaddata';
+    $.get()
+}
+
+</script>
+{% module footer()%}

@@ -9,6 +9,7 @@ import tornado.gen
 import sys
 import pickle
 import json
+from tool.hconf import HadoopConf
 from tool.log import *
 from tool.tool import *
 from models.installmodel import *
@@ -194,7 +195,7 @@ class ChooseInstallHandle(tornado.web.RequestHandler):
             machinesm=machinemodel(self.get_secure_cookie("crtcluster"))        
             self.render("chooseinstall.html",machines=machinesm.machines)
 
-#step 4:load data by ajax
+#step 4:load save data by ajax
 class ChooseAjaxInstall(tornado.web.RequestHandler):
     def get(self,paramer):
         projectm=projectmodel(self.get_secure_cookie("crtcluster"))
@@ -203,18 +204,18 @@ class ChooseAjaxInstall(tornado.web.RequestHandler):
 
     def post(self,paramer):
         data=json.loads(self.request.body)
+        #add the bash conf file
+        data=['bashrc']+data
         installpm=installpmodel(self.get_secure_cookie("crtcluster"))
-        packegpath='tmp/paths'
         self.set_header('Content-Type','application/text')
         try:
             #save data to promodel
             installpm.save(data)
-            with open(packegpath,'r') as f:
-                pathsofpack=pickle.load(f)
-            if packegpath is not None:
-                for x in data[0:-1]:
-                    cpfromto=pathsofpack[data[-1]][x].split(',')
-                    runshcommand('cp -r '+cpfromto[0]+' '+'tmp/')
+            packagem=packagepathmodel(self.get_secure_cookie("crtcluster"))
+            pathsofpack=packagem.packagepath
+            for x in data[0:-1]:
+                cpfromto=pathsofpack[data[-1]][x].split(',')
+                runshcommand('cp -r '+cpfromto[0]+' '+'cluster/'+self.get_secure_cookie("crtcluster"))
             self.write('success')
         except Exception, e:
             logging.error(e)
@@ -223,19 +224,23 @@ class ChooseAjaxInstall(tornado.web.RequestHandler):
 #step 5:custom configure 
 class CustomConfigure(tornado.web.RequestHandler):
     def get(self):
+        if self.get_secure_cookie("crtcluster") is None:
+            self.render("error.html",erroinfo="你还没有创建集群!",dirhref="/")
         try:
-            choosepath='tmp/chooseinstall'
-            packegpath='tmp/paths'
+            installm=installpmodel(self.get_secure_cookie("crtcluster"))
+            packegpathm=packagepathmodel(self.get_secure_cookie("crtcluster"))
             showpath=[]
-            #read the install project
-            with open(choosepath,'r') as f:
-                chooseinstall=pickle.load(f)
-            with open(packegpath,'r') as f:
-                packetsp=pickle.load(f)
+            #read the install project            
+            chooseinstall=installm.installproject
+            packetsp=packegpathm.packagepath
             for x in chooseinstall[0:-1]:
                 confdir=packetsp[chooseinstall[-1]][x].split(',')[-1]
-                confxml=[ i for i in os.listdir(confdir) if i.split('.')[-1] == 'xml']
-                showpath.append({'projectname':x,'projectdir':confxml})
+                if x !='bashrc':
+                    confxml=[ i for i in os.listdir(confdir) if i.split('.')[-1] == 'xml']
+                    showpath.append({'projectname':x,'projectdir':confxml})
+                #handle the conf file
+                else:
+                    showpath.append({'projectname':x,'projectdir':['.bashrc']})
 
         except Exception, e:
             logging.error(e)        
@@ -246,32 +251,35 @@ class CustomConfigureAjax(tornado.web.RequestHandler):
     """handle the data by ajax"""
     def get(self,project,filename):
         try:
-            self.set_header('Content-Type','application/json')
-            choosepath='tmp/chooseinstall'
-            packegpath='tmp/paths'
-            showpath=[]
-            #read the install project
-            with open(choosepath,'r') as f:
-                chooseinstall=pickle.load(f)
-            with open(packegpath,'r') as f:
-                packetsp=pickle.load(f)
-            confpath=packetsp[chooseinstall[-1]][project].split(',')[-1]+'/'+filename
-            con=HadoopConf(confpath)
-            dt=con.get()
-            self.write(json.dumps(dt))
+            installm=installpmodel(self.get_secure_cookie("crtcluster"))
+            packegpathm=packagepathmodel(self.get_secure_cookie("crtcluster"))
+            chooseinstall=installm.installproject
+            packetsp=packegpathm.packagepath
+            if filename.split('.')[-1] == 'xml':
+                self.set_header('Content-Type','application/json')
+                showpath=[]
+                #read the install project
+                confpath=packetsp[chooseinstall[-1]][project].split(',')[-1]+'/'+filename
+                con=HadoopConf(confpath)
+                dt=con.get()
+                self.write(json.dumps(dt))
+            else:
+                self.set_header('Content-Type','application/text')
+                datapath=packetsp[chooseinstall[-1]][project].split(',')[-1]+'/'+filename
+                with open(datapath,'r') as f:
+                    self.write(f.read())
+
         except Exception ,e:
             logging.error(e)
     def post(self,project,filename):
         try:
             self.set_header('Content-Type','application/json')
-            choosepath='tmp/chooseinstall'
-            packegpath='tmp/paths'
+            installm=installpmodel(self.get_secure_cookie("crtcluster"))
+            packegpathm=packagepathmodel(self.get_secure_cookie("crtcluster"))
             showpath=[]
             #read the install project
-            with open(choosepath,'r') as f:
-                chooseinstall=pickle.load(f)
-            with open(packegpath,'r') as f:
-                packetsp=pickle.load(f)
+            chooseinstall=installm.installproject
+            packetsp=packegpathm.packagepath
             #upload file
             if filename =="uploadfile":                
                 if self.request.files.get('uploadfile',None):
@@ -283,9 +291,13 @@ class CustomConfigureAjax(tornado.web.RequestHandler):
             #save the xml file
             else:    
                 confpath=packetsp[chooseinstall[-1]][project].split(',')[-1]+'/'+filename.split('?')[0]
-                data=json.loads(self.request.body)
-                con=HadoopConf(confpath)
-                con.setdt2(data) 
+                if filename.split('?')[0].split('.')[-1] == 'xml':
+                    data=json.loads(self.request.body)
+                    con=HadoopConf(confpath)
+                    con.setdt2(data) 
+                else:
+                    with open(confpath,'w') as f:
+                        f.write(self.request.body)
                 self.set_header("Content-Type","application/text")
                 self.set_status(201)
                 self.write("保存成功!")
@@ -371,3 +383,20 @@ class StartInstallAjax(tornado.web.RequestHandler):
         except Exception ,e:
             self.write("install error")
 
+#upload project file
+class uplprojectjar(tornado.web.RequestHandler):
+    def get(self,projectname):
+        if self.get_secure_cookie("crtcluster") is None:
+            self.render("error.html",erroinfo="你还没有创建集群!",dirhref="/")
+        else:
+            self.render("uplprojectjar.html",projectname=projectname)
+            #installpm=installpmodel(self.get_secure_cookie("crtcluster"))
+
+    def post(self,projectname):
+        pass
+
+class loadfiles(tornado.web.RequestHandler):
+    def get(self,projectname):
+        pass
+    def post(self,projectname):
+        pass
