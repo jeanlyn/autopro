@@ -389,7 +389,23 @@ class uplprojectjar(tornado.web.RequestHandler):
         if self.get_secure_cookie("crtcluster") is None:
             self.render("error.html",erroinfo="你还没有创建集群!",dirhref="/")
         else:
-            self.render("uplprojectjar.html",projectname=projectname)
+            route=projectname.split('/')
+            if route[-1]=='loaddata':
+                self.set_header('Content-Type','application/json')
+                route.remove(route[-1])
+                #get the projectname
+                project=route[0]
+                route.remove(route[0])
+                dirpath='/'.join(route)
+                #get the project which choose istall
+                installpm=installpmodel(self.get_secure_cookie('crtcluster'))
+                packegpathm=packagepathmodel(self.get_secure_cookie('crtcluster'))
+                localpath=packegpathm.packagepath[installpm.installproject[-1]][project].split(',')[1]
+                contend=os.walk(localpath+dirpath).next()
+                #construct of dir:[ispath,pathname,pathhref]
+                self.write(json.dumps([[True,x,'/'.join(['/uldprojectjar',project,dirpath,x])] for x in contend[1] ]+[[False,i] for i in contend[2]]))
+            else:
+                self.render("uplprojectjar.html",projectname=projectname,projecthref=projectname.split('/'))
             #installpm=installpmodel(self.get_secure_cookie("crtcluster"))
 
     def post(self,projectname):

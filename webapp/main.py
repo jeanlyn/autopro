@@ -35,7 +35,7 @@ application = tornado.web.Application([
     (r"/StartInstall.+",StartInstallAjax),
     (r"/CreateCluster.*",createcluster),
     (r"/login",Login),
-    (r"/uldprojectjar/(.+)",uldprojectjar),
+    (r"/uldprojectjar/(.+)",uplprojectjar),
 ],**settings)
 
 if __name__ == "__main__":

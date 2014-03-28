@@ -3,43 +3,88 @@
 <div class="container">
     <form>
         <h4>上传文件</h4>
-        <div class="controls">
-            <input type="file" name="uploadfile">
-            <button type="submit" class="btn" value="upload">上传</button>
+        <div class="control-group">
+            <div class="controls">
+                <input type="file" name="uploadfile">
+                <button type="submit" class="btn" value="upload">上传</button>
+            </div>
+        </div>
+        <h4>当前路径:<span><i class="icon-hand-right"></i> 
+            {% for i in range(len(projecthref)) %}
+            <a href="{{ '/'.join(['/uldprojectjar']+projecthref[0:i+1]) }}">/{{ projecthref[i] }}</a>
+            {% end %}
+        </span></h4>
+        
+        <div class="control-group">
+            <div class="controls">
+                <button class="btn btn-primary" data-bind="click: save">保存</button>
+            </div>
         </div>
     </form>
-    <table>
+    <table class="table" data-bind="visible: names().length>0">
         <thead>
             <th>name</th>
             <th>operation</th>
         </thead>
-        <tbody>
-            <tr>
-                <td></td>
-                <td></td>
+        <tbody data-bind="foreach: names">
+            <tr data-bind="if: isdir">
+                <td><a data-bind="attr: { href: href }, text: name"></a></td>
+                <td><a href="#" data-bind="click: $parent.delete">Delete</a></td>
+            </tr>
+            <tr data-bind="if: !isdir()">
+                <td data-bind="text: name"></td>
+                <td><a href="#" data-bind="click: $parent.delete">Delete</a></td>
             </tr>
         </tbody>
     </table>
+    <button id="backconf" class="btn btn-large btn-block" type="button">返回配置页面</button>
 </div>
-<input type="hidden" id="path" value="/loadfiles/{{ projectname }}">
+{% raw xsrf_form_html() %}
+<input type="hidden" id="path" value="/uldprojectjar/{{ projectname }}">
 <script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
 <script type="text/javascript">
+$(function(){
+    $("#backconf").click(function(){
+        window.location.href='/CustomConfigure';
+    })
+});
 function fileordir(){
     //arguments[0]:isdir,arguments[1]
-    this.isdir=isdir;
-    this.name=arguments[1];
-    if(isdir){   
-        this.href=arguments[2];
+    this.isdir=ko.observable(arguments[0][0]);
+
+    this.name=ko.observable(arguments[0][1]);
+    if(this.isdir()){   
+        this.href=ko.observable(arguments[0][2]);
     }
 }
 function fileordirViewMode(){
     self=this;
     self.names=ko.observableArray();
-
+    self.deletefile=ko.observableArray();
+    //action
+    self.delete=function(file){
+        self.deletefile.push(file);
+        self.names.remove(file);
+    };
     //loaddatath
     var requestpath=$("#path").val()+'/loaddata';
-    $.get()
+    $.get(requestpath,function(alldata){
+        $.map(alldata,function(data){
+            self.names.push(new fileordir(data))
+        });
+    });
+    self.save=function(){
+        if(self.deletefile().length==0){
+            dialog("并无任何修改")!
+        }
+        else{
+            var hname='_xsrf='+$('input[name="_xsrf"]').val();
+            var paths = $("#path").val()+'deletedata'+'?'+hname;
+            $.post()
+        }
+    }
 }
-
+vm=new fileordirViewMode();
+ko.applyBindings(vm);
 </script>
 {% module footer()%}
