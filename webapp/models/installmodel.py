@@ -28,7 +28,10 @@ class cluster():
                 logger.error(e)
 
     def modifyCluster(self,clustername,url):
-        pass            
+        pass   
+
+    def getclusterurl(self,clustername):
+        return self.clusters.get(clustername,None)         
 
 #handle the hosts file
 class hostsmodel():

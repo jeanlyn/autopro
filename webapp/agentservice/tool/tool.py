@@ -2,8 +2,8 @@
 import os
 import re
 import commands
-from log import *
 
+from log import *
 logging=getlog('tool','tool.log')
 #日志配置
 def runshcommand(cmd):

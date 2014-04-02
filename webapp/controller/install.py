@@ -1,6 +1,4 @@
 #encoding=UTF-8
-#step 1:init the install
-#add the tmp director 
 import tornado.ioloop
 import tornado.web
 import tornado.httpserver
@@ -310,6 +308,8 @@ class CustomConfigureAjax(tornado.web.RequestHandler):
 #step 6:start install
 class StartInstallHandle(tornado.web.RequestHandler):
     def get(self):
+        if self.get_secure_cookie("crtcluster") is None:
+            self.render("error.html",erroinfo="你还没有创建集群!",dirhref="/")
         self.render("StartInstall.html")
     def post(self):
         try:
@@ -357,31 +357,49 @@ class StartInstallHandle(tornado.web.RequestHandler):
         except Exception ,e:
             logging.error(e)
 
-#step 6:start install by ajax
+#step 6:start install by ajax get the state and request the agent server to install the package
 class StartInstallAjax(tornado.web.RequestHandler):
-    def get(self):
+    @tornado.web.asynchronous
+    @tornado.gen.engine
+    def get(self,action):
         self.set_header("Content-Type","application/text")
-        try:            
-            with open("done",'r') as f:
-                data=f.read().strip()
-                self.write(data)
-
-        except Exception ,e:
-            logging(e)
-            self.write("0")
+        clien=tornado.httpclient.AsyncHTTPClient()
+        clusterurl=cluster().getclusterurl(self.get_secure_cookie('crtcluster'))
+        response=yield tornado.gen.Task(clien.fetch,clusterurl[0]+'/getinstallstate')
+        self.write(response.body)
+        self.finish()
 
     @tornado.web.asynchronous
     @tornado.gen.engine
-    def post(self):
+    def post(self,routename):
         self.set_header("Content-Type","application/text")
+        route=routename.split('?')[0]
         try:
-            clien=tornado.httpclient.AsyncHTTPClient()
-            response= yield tornado.gen.Task(clien.fetch,"http://localhost:8887/Install")
-            self.write("install "+response.body)
-            self.finish()
-        
+            if route == 'handout':
+                #1.tar
+                clien=tornado.httpclient.AsyncHTTPClient()
+                clusterurl=cluster().getclusterurl(self.get_secure_cookie('crtcluster'))
+                if clusterurl is not None:
+                    runshcommand("tar zcf static/"+self.get_secure_cookie('crtcluster')+".tar.gz cluster/"+self.get_secure_cookie("crtcluster"))
+                    response = yield tornado.gen.Task(clien.fetch,clusterurl[0]+'/uploadinstallpackage/'+self.get_secure_cookie("crtcluster")+'.tar.gz')
+                    self.write(response.body)
+                    self.finish()
+                else:
+                    self.write("can't get the cluster url")
+            elif route == 'install':
+                clien=tornado.httpclient.AsyncHTTPClient()
+                clusterurl=cluster().getclusterurl(self.get_secure_cookie('crtcluster'))
+                if clusterurl is not None:
+                    response = yield tornado.gen.Task(clien.fetch,clusterurl[0]+'/installcluster')
+                    self.write(response.body)
+                    self.finish()
+                else:
+                    self.write("can't get the cluster url")
+
         except Exception ,e:
             self.write("install error")
+            logging.error(e)
+            self.finish()
 
 #upload project file
 class uplprojectjar(tornado.web.RequestHandler):
@@ -409,10 +427,49 @@ class uplprojectjar(tornado.web.RequestHandler):
             #installpm=installpmodel(self.get_secure_cookie("crtcluster"))
 
     def post(self,projectname):
-        pass
+        route=projectname.split('?')[0]
+        route=route.split('/')
+        #delete the files
+        if route[-1] == 'deletedata':
+            self.set_header('Content-Type','application/text')
+            route.remove(route[-1])
+            project=route[0]
+            route.remove(route[0])
+            dirpath='/'.join(route)
+            #get the project which choose istall
+            installpm=installpmodel(self.get_secure_cookie('crtcluster'))
+            packegpathm=packagepathmodel(self.get_secure_cookie('crtcluster'))
+            localpath=packegpathm.packagepath[installpm.installproject[-1]][project].split(',')[1]
+            try:
+                deletefiles=[ str(localpath+dirpath+'/'+x) for x in json.loads(self.request.body)]
+                if len(deletefiles) == 0 :
+                    self.write("没有删除的文件名")
+                else:
+                    if runshcommand("rm -rf "+' '.join(deletefiles)) is not None:
+                        self.write("删除成功!")
+                    else:
+                        self.write("删除失败!")
+            except Exception, e:
+                logging.error(e)
+                self.write("删除错误!")
+        #上传文件
+        elif route[-1] == 'uploadfile':
+            route.remove(route[-1])
+            project=route[0]
+            route.remove(route[0])
+            dirpath='/'.join(route)
+            #get the project which choose istall
+            installpm=installpmodel(self.get_secure_cookie('crtcluster'))
+            packegpathm=packagepathmodel(self.get_secure_cookie('crtcluster'))
+            localpath=packegpathm.packagepath[installpm.installproject[-1]][project].split(',')[1]
+            try:
+                if self.request.files.get('uploadfile',None):
+                    uploadpath=localpath+dirpath+'/'+self.request.files['uploadfile'][0]['filename']
+                    uploadfile=self.request.files['uploadfile'][0]
+                    with open(uploadpath,'w') as f:
+                        f.write(uploadfile['body'])
+                self.redirect('/uldprojectjar/'+'/'.join(projectname.split('?')[0].split('/')[0:-1]))
+            except Exception, e:
+                logging.error(e)
+                self.render("error.html",erroinfo="上传错误!",dirhref="/")
 
-class loadfiles(tornado.web.RequestHandler):
-    def get(self,projectname):
-        pass
-    def post(self,projectname):
-        pass

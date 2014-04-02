@@ -1,26 +1,27 @@
 {% module header() %}
 {% module nav(active=1) %}
-<div class="container">
-    <form>
-        <h4>上传文件</h4>
+<div class="container">    
+    <h4>上传文件</h4>
+    <form method="post" action="/uldprojectjar/{{ projectname }}/uploadfile" enctype="multipart/form-data">
         <div class="control-group">
             <div class="controls">
                 <input type="file" name="uploadfile">
                 <button type="submit" class="btn" value="upload">上传</button>
             </div>
         </div>
-        <h4>当前路径:<span><i class="icon-hand-right"></i> 
-            {% for i in range(len(projecthref)) %}
-            <a href="{{ '/'.join(['/uldprojectjar']+projecthref[0:i+1]) }}">/{{ projecthref[i] }}</a>
-            {% end %}
-        </span></h4>
-        
-        <div class="control-group">
-            <div class="controls">
-                <button class="btn btn-primary" data-bind="click: save">保存</button>
-            </div>
-        </div>
+        {% raw xsrf_form_html() %}
     </form>
+    <h4>当前路径:<span><i class="icon-hand-right"></i> 
+        {% for i in range(len(projecthref)) %}
+        <a href="{{ '/'.join(['/uldprojectjar']+projecthref[0:i+1]) }}">/{{ projecthref[i] }}</a>
+        {% end %}
+    </span></h4>
+    
+    <div class="control-group">
+        <div class="controls">
+            <button class="btn btn-primary" data-bind="click: save">保存</button>
+        </div>
+    </div>    
     <table class="table" data-bind="visible: names().length>0">
         <thead>
             <th>name</th>
@@ -39,7 +40,7 @@
     </table>
     <button id="backconf" class="btn btn-large btn-block" type="button">返回配置页面</button>
 </div>
-{% raw xsrf_form_html() %}
+
 <input type="hidden" id="path" value="/uldprojectjar/{{ projectname }}">
 <script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
 <script type="text/javascript">
@@ -75,12 +76,26 @@ function fileordirViewMode(){
     });
     self.save=function(){
         if(self.deletefile().length==0){
-            dialog("并无任何修改")!
+            dialog("并无任何修改!");
         }
         else{
             var hname='_xsrf='+$('input[name="_xsrf"]').val();
-            var paths = $("#path").val()+'deletedata'+'?'+hname;
-            $.post()
+            var paths = $("#path").val()+'/deletedata'+'?'+hname;
+            var data=self.deletefile().map(function(data){
+                return data.name();
+            })
+            $.post(paths,ko.toJSON(data),function(result){
+                dialog(result);
+                if(result=="删除成功!"){
+                    self.deletefile.removeAll();
+                }
+                else{
+                    for(var i=0;i<self.deletefile().length;i++){
+                        self.names.push(self.deletefile()[i])
+                    }
+                    self.deletefile.removeAll();
+                }
+            });
         }
     }
 }

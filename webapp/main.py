@@ -5,6 +5,7 @@ import sys
 from tool.hconf import HadoopConf
 from tool.tool import *
 from controller.install import *
+from controller.agent import *
 import json
 import pickle
 
@@ -32,10 +33,11 @@ application = tornado.web.Application([
     (r"/CustomConfigure",CustomConfigure),
     (r"/CustomConfigure/([^/]+)/(.+)",CustomConfigureAjax),
     (r"/StartInstall",StartInstallHandle),
-    (r"/StartInstall.+",StartInstallAjax),
+    (r"/StartInstall/(.+)",StartInstallAjax),
     (r"/CreateCluster.*",createcluster),
     (r"/login",Login),
     (r"/uldprojectjar/(.+)",uplprojectjar),
+    (r"/updateagent",updateagent),
 ],**settings)
 
 if __name__ == "__main__":

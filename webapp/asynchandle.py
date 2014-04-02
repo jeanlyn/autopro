@@ -40,7 +40,7 @@ class SendPackage(tornado.web.RequestHandler):
                 unp=f.read().strip('\n').split('\t')
 
             #tar scp ssh untar
-            totals= len(hosts)*2+1
+            totals = len(hosts)*2+1
             prodir = [packetsp[chooseinstall[-1]][x].split(',')[1] for x in chooseinstall[0:-1]]
             cmds='tar -zcf '+ zipdir+' '.join(prodir)+' '+'tmp/confclientpath.sh'
             clientrun='sh tmp/confclientpath.sh '+' '.join(chooseinstall[0:-1])
