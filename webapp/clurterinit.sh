@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-if [ $# -ne 1 ]; then
+if [ $# -lt 1 ]; then
     echo "must has one argument!" 1>&2
     exit 1
 fi

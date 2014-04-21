@@ -22,7 +22,9 @@ class MainHandler(tornado.web.RequestHandler):
     def get(self):
         try:
             item = ["item1","item2","item3"]
-            self.render("main.html",title="集市自动化管理",item=item)
+            clusters=cluster()
+            clusternames=clusters.clusters.keys()
+            self.render("choosecluster.html",cluster=clusternames)
         except Exception ,e:
             logging.error(e)
 
@@ -211,6 +213,7 @@ class ChooseAjaxInstall(tornado.web.RequestHandler):
             installpm.save(data)
             packagem=packagepathmodel(self.get_secure_cookie("crtcluster"))
             pathsofpack=packagem.packagepath
+            runshcommand("find cluster/"+self.get_secure_cookie("crtcluster")+"/ -mindepth 1 -maxdepth 1 -type d|xargs rm -r")
             for x in data[0:-1]:
                 cpfromto=pathsofpack[data[-1]][x].split(',')
                 runshcommand('cp -r '+cpfromto[0]+' '+'cluster/'+self.get_secure_cookie("crtcluster"))
@@ -234,7 +237,7 @@ class CustomConfigure(tornado.web.RequestHandler):
             for x in chooseinstall[0:-1]:
                 confdir=packetsp[chooseinstall[-1]][x].split(',')[-1]
                 if x !='bashrc':
-                    confxml=[ i for i in os.listdir(confdir) if i.split('.')[-1] == 'xml']
+                    confxml=[ i for i in os.listdir(confdir) ]
                     showpath.append({'projectname':x,'projectdir':confxml})
                 #handle the conf file
                 else:
@@ -381,18 +384,14 @@ class StartInstallAjax(tornado.web.RequestHandler):
                 clusterurl=cluster().getclusterurl(self.get_secure_cookie('crtcluster'))
                 if clusterurl is not None:
                     runshcommand("tar zcf static/"+self.get_secure_cookie('crtcluster')+".tar.gz cluster/"+self.get_secure_cookie("crtcluster"))
-                    response = yield tornado.gen.Task(clien.fetch,clusterurl[0]+'/uploadinstallpackage/'+self.get_secure_cookie("crtcluster")+'.tar.gz')
-                    self.write(response.body)
-                    self.finish()
+                    clien.fetch(clusterurl[0]+'/uploadinstallpackage/'+self.get_secure_cookie("crtcluster")+'.tar.gz',callback=self.handout_callback)
                 else:
                     self.write("can't get the cluster url")
             elif route == 'install':
                 clien=tornado.httpclient.AsyncHTTPClient()
                 clusterurl=cluster().getclusterurl(self.get_secure_cookie('crtcluster'))
                 if clusterurl is not None:
-                    response = yield tornado.gen.Task(clien.fetch,clusterurl[0]+'/installcluster')
-                    self.write(response.body)
-                    self.finish()
+                    clien.fetch(clusterurl[0]+'/installcluster',callback=self.install_callback)
                 else:
                     self.write("can't get the cluster url")
 
@@ -400,6 +399,15 @@ class StartInstallAjax(tornado.web.RequestHandler):
             self.write("install error")
             logging.error(e)
             self.finish()
+
+    def handout_callback(self,response):
+        self.set_header("Content-Type","application/text")
+        self.write(response.body)
+        self.finish()
+    def install_callback(self,response):
+        self.set_header("Content-Type","application/text")
+        self.write(response.body)
+        self.finish()
 
 #upload project file
 class uplprojectjar(tornado.web.RequestHandler):
@@ -472,4 +480,59 @@ class uplprojectjar(tornado.web.RequestHandler):
             except Exception, e:
                 logging.error(e)
                 self.render("error.html",erroinfo="上传错误!",dirhref="/")
+
+#register a cluster when the recieve the request of the agentserver
+class registercluster(tornado.web.RequestHandler):
+    def get(self):
+        self.set_header('Content-Type','application/json')
+        if self.get_argument("name",'') != '':
+            clustername='\''+self.get_argument("name",'')+'\''
+            agentserver='http://'+self.request.remote_ip+':'+self.get_argument('port','')
+            token=self.get_argument("token",'')
+            clusters=cluster()
+            if clustername != '' and token != '':
+                if clusters.incluster(clustername):
+                    if clusters.clusters[clustername][1] != token:
+                        self.write(json.dumps([1,"the cluster has exist"]))
+                    #modify
+                    else:
+                        clusters.addcluster(clustername,agentserver,token)
+                        self.write(json.dumps([0,"update success"]))
+                else:
+                    clusters.addcluster(clustername,agentserver,token)
+                    if runshcommand("sh clurterinit.sh "+clustername) is not None:
+                        self.write(json.dumps([0,"regist success"]))
+
+#the page maybe the entrance of manage the cluster
+class choosecluster(tornado.web.RequestHandler):
+    def get(self,url):        
+        if url != '':
+            clustername=url.split('/')[1]
+            handle=url.split('/')[0]
+            clusters=cluster()
+            if handle=='install':
+                if clusters.incluster(clustername):
+                    self.set_header('Content-Type','application/text')
+                    self.set_secure_cookie('crtcluster',clustername)
+                    self.redirect('/hosts')    
+                else:
+                    self.set_header('Content-Type','application/text')
+                    self.write('请求出错!')
+            else:
+                if clusters.incluster(clustername):
+                    self.set_header('Content-Type','application/text')
+                    self.set_secure_cookie('crtcluster',clustername)
+                    self.redirect('/manage')    
+                else:
+                    self.set_header('Content-Type','application/text')
+                    self.write('请求出错!')
+        else:
+            clusters=cluster()
+            clusternames=clusters.clusters.keys()
+            self.render('choosecluster.html',cluster=clusternames)
+
+    def post(self,clustername):
+        self.set_secure_cookie('crtcluster',clustername)
+        self.redirect('/hosts')
+
 

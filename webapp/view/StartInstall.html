@@ -49,6 +49,11 @@ $("#handout").click(function(){
             dialog(result);
             $("#handout").button("reset");
             $("#install").fadeIn();
+        },
+        error:function(result){
+            dialog('success')
+            $("#handout").button("reset");
+            $("#install").fadeIn();
         }
     });
 })

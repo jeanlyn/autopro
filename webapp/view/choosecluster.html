@@ -1,0 +1,37 @@
+{% module header() %}
+{% module nav(active=1) %}
+<div class="container">
+    <table class="table">
+        <thead>
+            <th>集群名字</th>
+            <th>操作</th>
+        </thead>
+        <tbody>
+            {% for clustername in cluster %}
+            <tr class="cluster">
+                <td class="clustername">{{ clustername }}</td>
+                <td>
+                    <a class="btn" href="/choosecluster/install/{{ clustername }}"><i class="icon-download-alt"></i> 安装</a>
+                    <a class="btn" href="/choosecluster/manage/{{ clustername }}"><i class="icon-wrench"></i> 管理</a>
+                </td>
+            </tr>
+            {% end %}
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    $('.cltbtn').click(function(){
+        var url='/choosecluster/'+$(this).parent().prev().html();
+        //console.log(url);
+        $.get(url,function(data){
+            if(data=='success'){
+                window.location.href='/hosts'
+            }
+            else{
+                dialog(data);
+            }            
+        });
+    });
+</script>
+
+{% module footer() %}

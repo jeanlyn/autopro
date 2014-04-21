@@ -5,5 +5,4 @@ if [ $# -lt 1 ]; then
 fi
 rm project.tar.gz
 cat cluster/${1}/.bashrc >> ~/.bashrc
-source ~/.bashrc
 cp -r -f cluster/${1}/* ~/

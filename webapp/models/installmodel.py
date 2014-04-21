@@ -18,9 +18,9 @@ class cluster():
     def incluster(self,clustername):
         return True if self.clusters.get(clustername,None) is not None else False
 
-    def addcluster(self,clustername,url):
+    def addcluster(self,clustername,url,token):
         if not self.incluster(clustername):
-            self.clusters[clustername]=[url]
+            self.clusters[clustername]=[url,token]
             try:
                 with open(self.datapath,"w") as f:
                     pickle.dump(self.clusters,f)
@@ -65,7 +65,7 @@ class projectmodel():
             with open(self.projectpath,"r") as f:
                 self.projects=pickle.load(f)
         else:
-            self.projects={"hadoop":["hadoop-2.2.0","hadoop-cdh4"],"hive":["hive-0.8","hive-0.12"]}
+            self.projects={"hadoop":["hadoop-2.2.0","hadoop-cdh4"],"hive":["hive-0.12.0","hive-0.8"]}
 
 class installpmodel():
     def __init__(self,clustername):
@@ -82,6 +82,8 @@ class installpmodel():
         except Exception, e:
             logger.error(e)
     
+
+    
 #needto edit the property self.packagepath when add project
 class packagepathmodel():
     def __init__(self,cluster):
@@ -91,6 +93,10 @@ class packagepathmodel():
         self.packagepath={'ubuntu-64-bit':
                            {
                                 'hadoop-2.2.0':'../repo/hadoop-2.2.0,cluster/'+cluster+'/hadoop-2.2.0,cluster/'+cluster+'/hadoop-2.2.0/etc/hadoop',
-                                'bashrc':'../repo/.bashrc,cluster/'+cluster+'/.bashrc,cluster/'+cluster+'/'
+                                'bashrc':'../repo/.bashrc,cluster/'+cluster+'/.bashrc,cluster/'+cluster+'/',
+                                'hive-0.12.0':'../repo/hive-0.12.0,cluster/'+cluster+'/hive-0.12.0,cluster/'+cluster+'/hive-0.12.0/conf'
                            }
                          }
+
+def projecthref():
+    return {'hadoop-2.2.0':'#','hive-0.12.0':'#','bashrc':'#'}

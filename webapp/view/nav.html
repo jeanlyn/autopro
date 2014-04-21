@@ -1,6 +1,16 @@
     <div class="navbar navbar-inverse">
         <div class="navbar-inner">
-            <a class="brand" href="#">导航</a>
+            <a class="brand" href="#">ClusterManager</a>
+            {% if username is None %}
+            <ul class="nav pull-right">
+                <li>
+                    <a href="/login" class="navbar-link pull-right">登录</a>
+                </li>
+            </ul>
+            {% end %}
+            {% if username is not None%}
+            <p class="navbar-text pull-right">{{ username }} <a class="navbar-link" href="/login">退出</a></p>
+            {% end %}
             <ul class="nav">
                 <li {% if active==1 %}
                                 class="active"

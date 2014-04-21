@@ -66,3 +66,59 @@
 2014-04-02 18:07:58,148 asynchandle.py[line:55] ERROR 192.168.1.3 has failed to install the project
 2014-04-02 18:07:58,158 asynchandle.py[line:47] ERROR 192.168.1.4 scp error!
 2014-04-02 18:07:58,171 asynchandle.py[line:55] ERROR 192.168.1.4 has failed to install the project
+2014-04-03 13:02:21,092 asynchandle.py[line:35] INFO tar the project success
+2014-04-03 13:02:25,551 asynchandle.py[line:47] ERROR 192.168.1.2 scp error!
+2014-04-03 13:02:25,570 asynchandle.py[line:55] ERROR 192.168.1.2 has failed to install the project
+2014-04-03 13:02:25,581 asynchandle.py[line:47] ERROR 192.168.1.3 scp error!
+2014-04-03 13:02:25,591 asynchandle.py[line:55] ERROR 192.168.1.3 has failed to install the project
+2014-04-03 13:02:25,604 asynchandle.py[line:47] ERROR 192.168.1.4 scp error!
+2014-04-03 13:02:25,625 asynchandle.py[line:55] ERROR 192.168.1.4 has failed to install the project
+2014-04-03 13:55:52,285 asynchandle.py[line:35] INFO tar the project success
+2014-04-03 13:55:54,900 asynchandle.py[line:47] ERROR 192.168.1.2 scp error!
+2014-04-03 13:55:54,914 asynchandle.py[line:55] ERROR 192.168.1.2 has failed to install the project
+2014-04-03 13:55:54,928 asynchandle.py[line:47] ERROR 192.168.1.3 scp error!
+2014-04-03 13:55:54,942 asynchandle.py[line:55] ERROR 192.168.1.3 has failed to install the project
+2014-04-03 13:55:54,964 asynchandle.py[line:47] ERROR 192.168.1.4 scp error!
+2014-04-03 13:55:54,994 asynchandle.py[line:55] ERROR 192.168.1.4 has failed to install the project
+2014-04-03 14:05:21,765 asynchandle.py[line:35] INFO tar the project success
+2014-04-03 14:05:26,197 asynchandle.py[line:47] ERROR 192.168.1.2 scp error!
+2014-04-03 14:05:26,219 asynchandle.py[line:55] ERROR 192.168.1.2 has failed to install the project
+2014-04-03 14:05:26,235 asynchandle.py[line:47] ERROR 192.168.1.3 scp error!
+2014-04-03 14:05:26,250 asynchandle.py[line:55] ERROR 192.168.1.3 has failed to install the project
+2014-04-03 14:05:26,269 asynchandle.py[line:47] ERROR 192.168.1.4 scp error!
+2014-04-03 14:05:26,279 asynchandle.py[line:55] ERROR 192.168.1.4 has failed to install the project
+2014-04-04 16:53:45,026 asynchandle.py[line:37] INFO tar the project success
+2014-04-04 16:53:46,008 asynchandle.py[line:49] ERROR 192.168.1.2 scp error!
+2014-04-04 16:53:46,024 asynchandle.py[line:57] ERROR 192.168.1.2 has failed to install the project
+2014-04-04 16:53:46,036 asynchandle.py[line:49] ERROR 192.168.1.3 scp error!
+2014-04-04 16:53:46,051 asynchandle.py[line:57] ERROR 192.168.1.3 has failed to install the project
+2014-04-04 16:53:46,078 asynchandle.py[line:49] ERROR 192.168.1.4 scp error!
+2014-04-04 16:53:46,087 asynchandle.py[line:57] ERROR 192.168.1.4 has failed to install the project
+2014-04-08 14:47:37,552 asynchandle.py[line:37] INFO tar the project success
+2014-04-08 14:47:38,095 asynchandle.py[line:49] ERROR 192.168.1.2 scp error!
+2014-04-08 14:47:38,104 asynchandle.py[line:57] ERROR 192.168.1.2 has failed to install the project
+2014-04-08 14:47:38,117 asynchandle.py[line:49] ERROR 192.168.1.3 scp error!
+2014-04-08 14:47:38,132 asynchandle.py[line:57] ERROR 192.168.1.3 has failed to install the project
+2014-04-08 14:47:38,156 asynchandle.py[line:49] ERROR 192.168.1.4 scp error!
+2014-04-08 14:47:38,162 asynchandle.py[line:57] ERROR 192.168.1.4 has failed to install the project
+2014-04-14 16:20:15,554 asynchandle.py[line:37] INFO tar the project success
+2014-04-14 16:20:16,220 asynchandle.py[line:49] ERROR 192.168.1.2 scp error!
+2014-04-14 16:20:16,237 asynchandle.py[line:57] ERROR 192.168.1.2 has failed to install the project
+2014-04-14 16:20:16,265 asynchandle.py[line:49] ERROR 192.168.1.3 scp error!
+2014-04-14 16:20:16,300 asynchandle.py[line:57] ERROR 192.168.1.3 has failed to install the project
+2014-04-14 16:20:16,322 asynchandle.py[line:49] ERROR 192.168.1.4 scp error!
+2014-04-14 16:20:17,423 asynchandle.py[line:57] ERROR 192.168.1.4 has failed to install the project
+2014-04-14 17:46:27,239 asynchandle.py[line:37] INFO tar the project success
+2014-04-14 17:46:28,393 asynchandle.py[line:49] ERROR 192.168.1.2 scp error!
+2014-04-14 17:46:28,448 asynchandle.py[line:57] ERROR 192.168.1.2 has failed to install the project
+2014-04-14 17:46:28,469 asynchandle.py[line:49] ERROR 192.168.1.3 scp error!
+2014-04-14 17:46:28,496 asynchandle.py[line:57] ERROR 192.168.1.3 has failed to install the project
+2014-04-14 17:46:28,526 asynchandle.py[line:49] ERROR 192.168.1.4 scp error!
+2014-04-14 17:46:28,539 asynchandle.py[line:57] ERROR 192.168.1.4 has failed to install the project
+2014-04-14 20:28:49,700 asynchandle.py[line:37] INFO tar the project success
+2014-04-14 20:28:52,368 asynchandle.py[line:49] ERROR 192.168.1.2 scp error!
+2014-04-14 20:28:52,377 asynchandle.py[line:57] ERROR 192.168.1.2 has failed to install the project
+2014-04-14 20:28:52,393 asynchandle.py[line:49] ERROR 192.168.1.3 scp error!
+2014-04-14 20:28:52,402 asynchandle.py[line:57] ERROR 192.168.1.3 has failed to install the project
+2014-04-14 20:28:52,425 asynchandle.py[line:49] ERROR 192.168.1.4 scp error!
+2014-04-14 20:28:52,437 asynchandle.py[line:57] ERROR 192.168.1.4 has failed to install the project

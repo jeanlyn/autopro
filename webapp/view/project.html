@@ -1,0 +1,9 @@
+<div class="span2">
+    <ul class="nav nav-list bs-docs-sidenav affix-top">
+    {% for project in projects %}
+        <li id="{{ project[1].split('-')[0] }}">
+            <a href="{{project[0]}}">{{ project[1] }}</a>
+        </li>
+    {% end %}
+    </ul>
+</div>

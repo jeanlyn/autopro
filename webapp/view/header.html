@@ -7,7 +7,11 @@
     <script type="text/javascript" src="{{ static_url("bootstrap/js/bootstrap.min.js") }}"></script>
     <script type="text/javascript">
         function dialog(value){
-            $(".modal-body p").html(value);
+            var show = value.split('\n');
+            $(".modal-body").html("");
+            show.map(function(data){
+                $(".modal-body").append('<p>'+data+'</p>');
+            });
             $("#alertModal").modal("toggle");
         }
         function getCookie(name) {
@@ -26,4 +30,4 @@
     </script>
 </head>
 <body>
-	<h1>集市自动化项目</h1>
+	

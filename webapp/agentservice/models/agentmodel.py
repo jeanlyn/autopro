@@ -6,7 +6,9 @@ logger=getlog('agentmodel','agentmodel.log')
 class serverModel():
     def __init__(self):
         self.path='webserver.txt'
+        self.tokenpath='token.txt'
         self.clusterpath='clustername.txt'
+        self.portpath='agentserverport.txt'
     #get the server address
     def getserver(self):
         if os.path.isfile(self.path):
@@ -18,6 +20,16 @@ class serverModel():
     def setserver(self,serveraddress):
         with open(self.path,'w') as f:
             f.write(serveraddress)
+
+    def gettoken(self):
+        if os.path.isfile(self.tokenpath):
+            with open(self.tokenpath,'r') as f:
+                return f.read().strip
+        else:
+            return ''
+    def settoken(self,token):
+        with open(self.tokenpath,'w') as f:
+            f.write(token)
 
     #the address of update dir
     def getupdatead(self):
@@ -36,6 +48,23 @@ class serverModel():
     def getuploaddir(self):
         return self.getserver()+'/static/'
 
+    def isnotexist(self):
+        return not os.path.isfile(self.path)
+
+    #get and set the agentserver port
+    def getport(self):
+        if os.path.isfile(self.portpath):
+            with open(self.portpath) as f:
+                return f.read().strip()
+        else:
+            return ''
+    def setport(self,port):
+        with open(self.portpath,'w') as f:
+            f.write(port)
+
+
+
+#the model used when install
 class installModel():
     def __init__(self,clustername):
         self.path='cluster/'+clustername
@@ -73,6 +102,7 @@ class installModel():
                 return hosts
         else:
             return None
+
 #the class for get or set the username to ssh 
 class sshuserModel():
     def __init__(self):
@@ -81,7 +111,9 @@ class sshuserModel():
         if os.path.isfile(self.path):
             with open(self.path,'r') as f:
                 return f.read().strip()
-        return ''
+        return '-1'
+
     def setusername(self,username):
         with open(self.path,'w') as f:
             f.write(username)
+

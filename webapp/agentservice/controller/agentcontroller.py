@@ -36,14 +36,17 @@ class updataHandler(tornado.web.RequestHandler):
 class upload(tornado.web.RequestHandler):
     def get(self,projectname):
         uploadad=serverModel().getuploaddir()+projectname
-        filename='jeanlyn.tar.gz'
+        sm=serverModel()
+        filename=sm.getclustername()+'.tar.gz'
         if os.path.isfile(filename):
             runshcommand('rm '+filename)
         self.set_header('Content-Type','application/text')
         try:
             runshcommand("wget "+uploadad)
-            runshcommand("tar zxf "+projectname)
             self.write('success')
+            runshcommand('rm -r cluster/')
+            runshcommand("tar zxf "+projectname)
+            
         except Exception, e:
             logging.error(e)
             self.write('error')

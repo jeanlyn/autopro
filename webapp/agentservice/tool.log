@@ -62,3 +62,57 @@ tar: 由于前次错误，将以上次的错误状态退出
 2014-04-02 18:07:58,148 tool.py[line:12] ERROR there is someting wrong:
 2014-04-02 18:07:58,158 tool.py[line:12] ERROR there is someting wrong:
 2014-04-02 18:07:58,171 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:02:25,534 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:02:25,570 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:02:25,580 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:02:25,591 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:02:25,604 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:02:25,624 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:55:54,900 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:55:54,913 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:55:54,928 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:55:54,941 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:55:54,964 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 13:55:54,994 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 14:05:26,196 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 14:05:26,218 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 14:05:26,234 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 14:05:26,249 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 14:05:26,269 tool.py[line:12] ERROR there is someting wrong:
+2014-04-03 14:05:26,278 tool.py[line:12] ERROR there is someting wrong:
+2014-04-04 16:53:38,996 tool.py[line:12] ERROR there is someting wrong:rm: 无法删除"*.error": 没有那个文件或目录
+2014-04-04 16:53:39,083 tool.py[line:12] ERROR there is someting wrong:rm: 无法删除"error/*": 没有那个文件或目录
+2014-04-04 16:53:46,008 tool.py[line:12] ERROR there is someting wrong:
+2014-04-04 16:53:46,023 tool.py[line:12] ERROR there is someting wrong:
+2014-04-04 16:53:46,036 tool.py[line:12] ERROR there is someting wrong:
+2014-04-04 16:53:46,050 tool.py[line:12] ERROR there is someting wrong:
+2014-04-04 16:53:46,078 tool.py[line:12] ERROR there is someting wrong:
+2014-04-04 16:53:46,086 tool.py[line:12] ERROR there is someting wrong:
+2014-04-08 14:47:31,233 tool.py[line:12] ERROR there is someting wrong:rm: 无法删除"*.error": 没有那个文件或目录
+2014-04-08 14:47:38,094 tool.py[line:12] ERROR there is someting wrong:
+2014-04-08 14:47:38,103 tool.py[line:12] ERROR there is someting wrong:
+2014-04-08 14:47:38,116 tool.py[line:12] ERROR there is someting wrong:
+2014-04-08 14:47:38,131 tool.py[line:12] ERROR there is someting wrong:
+2014-04-08 14:47:38,155 tool.py[line:12] ERROR there is someting wrong:
+2014-04-08 14:47:38,162 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 15:30:03,659 tool.py[line:12] ERROR there is someting wrong:rm: 无法删除"*.error": 没有那个文件或目录
+2014-04-14 16:14:52,666 tool.py[line:12] ERROR there is someting wrong:rm: 无法删除"*.error": 没有那个文件或目录
+2014-04-14 16:20:09,947 tool.py[line:12] ERROR there is someting wrong:rm: 无法删除"*.error": 没有那个文件或目录
+2014-04-14 16:20:16,220 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 16:20:16,237 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 16:20:16,264 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 16:20:16,299 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 16:20:16,321 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 16:20:17,422 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 17:46:28,393 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 17:46:28,447 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 17:46:28,469 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 17:46:28,496 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 17:46:28,525 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 17:46:28,538 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 20:28:52,367 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 20:28:52,377 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 20:28:52,393 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 20:28:52,401 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 20:28:52,424 tool.py[line:12] ERROR there is someting wrong:
+2014-04-14 20:28:52,436 tool.py[line:12] ERROR there is someting wrong:

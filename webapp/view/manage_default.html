@@ -1,0 +1,11 @@
+{% module header() %}
+{% module nav(active=2)%}
+<div class="container-fluid">
+    <div class="row-fluid">
+        {% module projects(project=project) %}
+        <div class="span10">
+            {% module hadoopnav() %}
+        </div>
+    </div>
+</div>
+{% module footer() %}

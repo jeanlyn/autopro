@@ -17,6 +17,16 @@ class footer(tornado.web.UIModule):
 
 class nav(tornado.web.UIModule):
     """docstring for footer"""
-    def render(self,active=1):
+    def render(self,active=1,username=None):
         return self.render_string(
-            "nav.html",active=active)
+            "nav.html",active=active,username=None)
+
+class projects(tornado.web.UIModule):
+    def render(self,project):
+        return self.render_string(
+            "project.html",projects=project)
+
+class hadoopnav(tornado.web.UIModule):
+    def render(self):
+        return self.render_string(
+            "hadoopnav.html")

@@ -27,7 +27,9 @@ class installcluster(tornado.web.RequestHandler):
         '''todo'''
         totals=len(hosts)*2+1
         clientrun='sh nodeinstall.sh '+sm.getclustername()
+        #init
         runshcommand('echo "0" > done')
+        runshcommand('rm error/*')
         user=sshuserModel().getusername()
         try:
             cmds='tar zcf '+zipdir+' '.join(project)+' nodeinstall.sh'
@@ -38,7 +40,7 @@ class installcluster(tornado.web.RequestHandler):
             #1.scp and 2.ssh untar 3.run nodeinstall.sh
             for x in hosts:
                 #scp
-                cmds='scp '+zipdir+user+'@'+x[0]+':~/ 2>'+x[0]+'.error'
+                cmds='scp '+zipdir+user+'@'+x[0]+':~/ 2>error/'+x[0]
                 if runshcommand(cmds) is not None:
                     finish+=1
                     runshcommand('echo '+str(float(finish/totals)*100)+' >done')
@@ -46,7 +48,7 @@ class installcluster(tornado.web.RequestHandler):
                 else:
                     logging.error(x[0]+" scp error!")
                 #ssh untar
-                cmds='ssh '+user+'@'+x[0]+' "tar -zxvf '+ zipdir +' && '+clientrun+'" 2>>'+x[0]+'.error'
+                cmds='ssh '+user+'@'+x[0]+' "tar -zxvf '+ zipdir +' && '+clientrun+'" 2>>error/'+x[0]
                 if runshcommand(cmds) is not None:
                     finish+=1
                     runshcommand('echo '+str(float(finish/totals)*100)+' >done')
@@ -58,9 +60,11 @@ class installcluster(tornado.web.RequestHandler):
 
         if finish == totals:
             self.write("success")
+        #some hosts 
         else:
             runshcommand('rm done')
-            self.write("error")
+            message='\n'.join(runshcommand('cat error/*'))
+            self.write(message)
 
 #setting for application
 settings = {

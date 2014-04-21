@@ -6,6 +6,7 @@ from tool.hconf import HadoopConf
 from tool.tool import *
 from controller.install import *
 from controller.agent import *
+from controller.manage import *
 import json
 import pickle
 
@@ -22,7 +23,7 @@ settings = {
 #routing
 application = tornado.web.Application([
     (r"/",MainHandler),    
-    (r"/\?.+",MainHandler),
+    (r"/\?.+",MainHandler),#install
     (r"/clusterunp.*",addClusterUsername),
     (r"/hosts",hostsHandler),
     (r"/hosts/(.+)",hostsloadHandler),
@@ -38,6 +39,9 @@ application = tornado.web.Application([
     (r"/login",Login),
     (r"/uldprojectjar/(.+)",uplprojectjar),
     (r"/updateagent",updateagent),
+    (r"/regitcluster",registercluster),
+    (r"/choosecluster/?(.*)",choosecluster),#install end
+    (r"/manage",manage),
 ],**settings)
 
 if __name__ == "__main__":
