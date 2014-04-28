@@ -197,7 +197,7 @@
             }
             //save
             self.save=function(){
-                var hname='_xsrf='+$('input[name="_xsrf"]').val();
+                var hname = '_xsrf='+$('input[name="_xsrf"]').val();
                 var paths = $("#filename").val()+'?'+hname;
                 if(self.configures().length>0){             
                     if(/^\/CustomConfigure\/[\S]+\.xml/.test(paths)){

@@ -11,4 +11,12 @@
     <li id="managequeue">
         <a href="#">管理队列</a>
     </li>
+    <li class="dropdown">
+        <a href="dropdown-toggle" data-toggle="dropdown" href="#">Configure<b class="caret"></b></a>
+        <ul class="dropdown-menu">
+            {% for projectdir in xmls['projectdir'] %}
+                <li><a data-bind="click:function(){getdata($element)}" project="{{ xmls['projectname'] }}" class="configurefiles" href="#">{{ projectdir }}</a></li>
+            {% end %}
+        </ul>
+    </li>
 </ul>

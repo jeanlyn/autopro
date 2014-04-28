@@ -27,6 +27,6 @@ class projects(tornado.web.UIModule):
             "project.html",projects=project)
 
 class hadoopnav(tornado.web.UIModule):
-    def render(self):
+    def render(self,xmls={}):
         return self.render_string(
-            "hadoopnav.html")
+            "hadoopnav.html",xmls=xmls)

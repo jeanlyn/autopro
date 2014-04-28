@@ -4,16 +4,579 @@
     <div class="row-fluid">
         {% module projects(project=project) %}
         <div class="span10">
-            {% module hadoopnav() %}
-            <div class="well">
+            <ul class="nav nav-tabs">
+                <li id='overview' data-bind="click: gmodels('overview').getdata">
+                    <a href="#">OverView</a>
+                </li>
+                <li id="adduser" data-bind="click: gmodels('adduser').showdiv">
+                    <a href="#">添加用户</a>
+                </li>
+                <li id="managehost" data-bind="click: gmodels('hosts').loaddata">
+                    <a href="#">管理host</a>
+                </li>
+                <li id="managequeue">
+                    <a href="#">管理队列</a>
+                </li>
+                <li class="dropdown">
+                    <a href="dropdown-toggle" data-toggle="dropdown" href="#">Configure<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        {% for projectdir in xmls['projectdir'] %}
+                            <li><a data-bind="click:function(){gmodels('configure').getdata($element)}" project="{{ xmls['projectname'] }}" class="configurefiles" href="#">{{ projectdir }}</a></li>
+                        {% end %}
+                    </ul>
+                </li>
+            </ul>
+            <!--OverView的html-->
+            <div class="panel panel-default overview" style="display:none;"  data-bind="slideVisible: gmodels('overview').resourcemanage() != ''">
+              <!-- Default panel contents -->
+                <script type="text/javascript">
+                    //OverView model
+                    function OverViewModel(){
+                        var self=this;
+                        self.resourcemanage=ko.observable("");
+                        self.nameservices=ko.observable("");
+                        self.hdfsFederation=ko.observable("");
+                        self.reset=function(){
+                            self.resourcemanage('');
+                            self.nameservices('');
+                            self.hdfsFederation('')
+                        }
+                        self.getdata=function(){
+                            var projectname=$(".nav-list .active a").html();
+                            if(typeof projectname != "string" || $.trim(projectname)==""){
+                                dialog('操作有误!')
+                            }
+                            $.get('/overview/'+projectname,function(data){
+                                if(typeof data == "string"){
+                                    dialog(data);
+                                }
+                                else{
+                                    self.resourcemanage(data['resourcemanager']['value']);
+                                    self.nameservices(data['nameservices']['value']);
+                                    self.hdfsFederation(data['nameservices']['value'].split(',').length>1?'是':'否')
+                                }
+                            });
+                        }
+
+                    }
+                </script>
+                <div class="panel-heading" >OverView</div>
+                <div class="panel-body">
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label">采用hdfs联盟:</label>
+                            <div class="controls">
+                                <input type="text" class="disabled" data-bind="value: gmodels('overview').hdfsFederation">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">namenode或者nameservices</label>
+                            <div class="controls">
+                                <input type="text" class="disabled" data-bind="value: gmodels('overview').nameservices">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">ResourceManager</label>
+                            <div class="controls">
+                                <input type="text" class="disabled" data-bind="value: gmodels('overview').resourcemanage">
+                            </div>
+                        </div>
+                    </form> 
+                </div>               
             </div>
+            <!--end OverView的html-->
+
+            <!--添加用户-->
+            <div class="panel panel-default dadduser" style="display:none;" data-bind="slideVisible: gmodels('adduser').show">
+                <script type="text/javascript">
+                    //添加用户mode
+                    function adduserModel(){
+                        var self=this;
+                        self.show=ko.observable();
+                        self.reset=function(){
+                            self.show(false);
+                        };
+                        self.showdiv=function(){
+                            self.show(true);
+                        };
+                    }
+                </script>
+                <!-- Default panel contents -->
+                <div class="panel-heading">添加用户</div>
+                <div class="panel-body">
+                    <div class="control-group">
+                        <label class="control-label">输入用户名</label>
+                        <div class="controls">
+                            <input type="text" id="ipusername">
+                        </div>
+                        <button class="btn">提交</button>
+                    </div>
+                    <table class="table">
+                        <th>编号</th>
+                        <th>用户名</th>
+                    </table>
+                </div>               
+            </div>
+            <!--end添加用户-->
+
+            <!--管理host-->
+            <div class="panel panel-default dmanagehost" style="display:none;" data-bind="slideVisible: gmodels('hosts').hostsbind().length>0">
+                <script type="text/javascript">
+                    //管理host Model
+                    function hostsmanageModel(){
+                        var hosts=function(ip,host){
+                            this.ip=ko.observable(ip);
+                            this.host=ko.observable(host);
+                        };
+                        var self=this;
+                        //data
+                        self.hostsbind=ko.observableArray([]);
+                        self.ip=ko.observable();
+                        self.hostname=ko.observable();
+                        self.searchtext=ko.observable();
+                        //action
+                        self.init=function(){
+                            self.ip("");
+                            self.hostname("");
+                            self.searchtext("")
+                        }
+                        self.reset=function(){
+                            self.ip("");
+                            self.hostname("");
+                            self.searchtext("")
+                            self.hostsbind([]);
+                        }
+                        self.remove=function(host){
+                            self.hostsbind.remove(host);
+                            var source=self.hostsbind().map(function(data){
+                                return data.ip()+' '+data.host()
+                            });
+                            $(".search-query").data('typeahead').source=source;
+                        };
+
+                        self.search=function(){
+                            var searchvalue=self.searchtext().split(' ')
+                            self.ip(searchvalue[0]);
+                            self.hostname(searchvalue[1]);
+                        };
+                        self.addormidify=function(){
+                            var value=self.hostsbind().filter(function(data){
+                                return data.ip()==self.ip()||data.host()==self.hostname();
+                            })
+                            //modify
+                            if(value.length>0){
+                                value[0].ip(self.ip());
+                                value[0].host(self.hostname());
+                            }
+                            //add
+                            else{
+                                self.hostsbind.push(new hosts(self.ip(),self.hostname()));
+                            }
+                            var source=self.hostsbind().map(function(data){
+                                return data.ip()+' '+data.host()
+                            });
+                            $(".search-query").data('typeahead').source=source;
+                        };
+
+                        //save
+                        self.save=function(){
+                            var hname='_xsrf='+$('input[name="_xsrf"]').val();
+                            var paths = '/hosts/save'+'?'+hname;
+                            $.ajax(paths,{
+                                data:ko.toJSON(self.hostsbind),
+                                type:"post",
+                                headers:{"Cookie":document.cookie,"Content-Type":"application/json;charset=UTF-8"},
+                                success:function(result){
+                                    dialog(result);
+                                }
+                            });
+                        };
+                        //load data
+                        self.loaddata=function(){
+                            $.getJSON('/hosts/getdata',function(datas){
+                                if(datas=="error"){
+                                    dialog("加载数据出错!");
+                                }
+                                else{
+                                    var hostarry=$.map(datas,function(data){
+                                        return new hosts(data[0],data[1]);
+                                    });
+                                    self.hostsbind(hostarry);
+                                    var source=self.hostsbind().map(function(data){
+                                        return data.ip()+' '+data.host()
+                                    });
+                                    $(".search-query").data('typeahead').source=source;
+                                }
+                            });
+                        }
+                        
+                    }
+                </script>
+                  <!-- Default panel contents -->
+                <div class="panel-heading">管理host</div>
+                <div class="panel-body">
+                    <div class="container">
+                        <form action="/hosts/uploadfile" method="post" enctype="multipart/form-data">
+                            <fieldset>
+                                <legend>上传hosts文件</legend>
+                                <div class="control-group">
+                                    <input class="btn" type="file" name="uploadfile">
+                                    <button type="submit" class="btn" value="upload">上传</button>
+                                </div>
+                                
+                            </fieldset>
+                        </form>
+                        <form >
+                            <fieldset>
+                                <legend>操作</legend>
+                                <div class="control-group">
+                                    <input data-bind="value: gmodels('hosts').searchtext" type="text" class="input-large search-query" placeholder="search">
+                                    <button id="searchbtn" data-bind="click: gmodels('hosts').search" class="btn">查找</button>
+                                </div>    
+                                <div class="control-group">                                    
+                                    <button class="btn" data-bind="click: gmodels('hosts').save">保存</button>
+                                </div>       
+                            </fieldset>
+                        </form>
+                    </div>
+                    <div class="container">
+                        <table class="table" data-bind="slideVisible: gmodels('hosts').hostsbind().length>0">
+                            <thead>
+                                <tr>
+                                    <th>ip</th>
+                                    <th>hosts</th>
+                                    <th>操作</th>
+                                </tr>
+                                <tr>
+                                    <th><input data-bind="value: gmodels('hosts').ip" type="text" placeholder="ip"></th>
+                                    <th><input data-bind="value: gmodels('hosts').hostname" type="text" placeholder="hostname"></th>
+                                    <th>
+                                        <button class="btn" data-bind="click: gmodels('hosts').addormidify">添加或修改</button>
+                                        <button class="btn" data-bind="click:gmodels('hosts').init">重置</button>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody data-bind="foreach: gmodels('hosts').hostsbind">
+                                <tr>
+                                    <td><a href="#" data-bind="text: ip" type="text"></a></td>
+                                    <td><p data-bind="text: host"></p></td>
+                                    <td><a href="#" data-bind="click: function(){$parent.remove('hosts',$data);}">Delete</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>               
+            </div>
+            <!--end管理host-->
+
+            <!--管理队列-->
+            <div class="panel panel-default dmqueue" style="display:none">
+              <!-- Default panel contents -->
+                <div class="panel-heading">管理队列</div>
+                <div class="panel-body">
+                    <p>...</p>
+                </div>               
+            </div>
+            <!--end管理队列-->
+
+            <!--配置文件的html-->
+            <div class="panel panel-default dconfigure" style="display:none;" data-bind="slideVisible: gmodels('configure').configures().length>0 || $.trim(gmodels('configure').areatext())!=''">
+                <script type="text/javascript">
+                    //configure model
+                    function configureModel(){
+                        var configure=function(key,data){
+                            this.name=ko.observable(key);
+                            this.value=ko.observable(data['value']);
+                            this.description=ko.observable(data['description']);  
+                        }
+                        var self=this;
+                        //data
+                        self.configures=ko.observableArray([]);
+                        self.configurename=ko.observable();
+                        self.configurevalue=ko.observable();
+                        self.configuredescription=ko.observable();
+                        self.searchkey=ko.observable();
+                        self.areatext=ko.observable();
+                        //action
+                        self.reset=function(){
+                            self.configures.removeAll();
+                            self.configurename("");
+                            self.configurevalue("");
+                            self.configuredescription("");
+                            self.searchkey("");
+                            self.areatext("");
+                        }
+                        //resetinput
+                        self.resetinput=function(){
+                            self.configurename("");
+                            self.configurevalue("");
+                            self.configuredescription("");
+                            self.searchkey("");
+                        }
+                        //Load data 
+                        self.getdata=function(element){
+                            var paths='/CustomConfigure/'+$(element).attr('project')+'/'+$(element).html();
+                            self.reset();
+                            $.get(paths,function(alldata){
+                                if(typeof(alldata)=="object"){
+                                    for( var data in alldata){
+                                        self.configures.push(new configure(data,alldata[data]));
+                                    }
+                                    //self.configures(mapconf);
+                                    //设置自动提示
+                                    var source=self.configures().map(function(data){
+                                        return data.name();
+                                    });
+                                    //自动提示
+                                    $("#configurename").data('typeahead').source=source;
+                                    //给隐藏与赋值用于保存数据
+                                    $("#filename").val(paths);
+                                }
+                                else{
+                                    self.areatext(alldata);
+                                    $("#filename").val(paths);
+                                }  
+                            }); 
+                        }   
+                        //search    
+                        self.search=function(){
+                            svalue=self.configures().filter(function(data){
+                                return data.name()==self.searchkey();
+                            });
+                            if(svalue.length!=0){
+                                self.configurename(svalue[0].name());
+                                self.configurevalue(svalue[0].value());
+                                self.configuredescription(svalue[0].description());
+                            }
+                        }
+                        //save
+                        self.save=function(){
+                            var hname = '_xsrf='+$('input[name="_xsrf"]').val();
+                            var paths = $("#filename").val()+'?'+hname;
+                            if(self.configures().length>0){             
+                                if(/^\/CustomConfigure\/[\S]+\.xml/.test(paths)){
+                                    $.ajax(paths,{
+                                        data:ko.toJSON(self.configures),
+                                        type:"post",
+                                        headers:{"Content-Type":"application/json;charset=UTF-8"},
+                                        success:function(result){
+                                            dialog(result);
+                                        }
+                                    });
+                                }
+                                self.configures([]);
+                            }
+                            else if(self.areatext()!=""){
+                                $.ajax(paths,{
+                                    data:self.areatext(),
+                                    type:"post",
+                                    headers:{"Content-Type":"application/text;charset=UTF-8"},
+                                    success:function(result){
+                                        dialog(result);
+                                    }
+                                });
+                                self.areatext('');
+                            }
+                            else{
+                                dialog("操作有误!");
+                            }
+                        }   
+                        //add new name or modify
+                        self.addormodify=function(){
+                            if(self.configurename()==undefined||self.configurename()==""){
+                                dialog("请输入要修改的数据！");
+                                return;
+                            }
+                            else{
+                                svalue=self.configures().filter(function(data){
+                                    return data.name()==self.searchkey();
+                                });
+                                if (svalue.length!=0) {
+                                    svalue[0].name(self.configurename());
+                                    svalue[0].value(self.configurevalue());
+                                    svalue[0].description(self.configuredescription());
+                                }
+                                else{
+                                    self.configures.push(new configure(self.configurename(),
+                                        {"value":self.configurevalue(),"description":self.configuredescription()}));
+                                }
+                                //设置自动提示
+                                var source=self.configures().map(function(data){
+                                    return data.name();
+                                });
+                                //自动提示
+                                
+                                $("#configurename").data('typeahead').source=source;
+                            }
+                        }
+                        //remove
+                        self.remove=function(configure){
+                            self.configures.remove(configure);
+                            //设置自动提示
+                            var source=self.configures().map(function(data){
+                                return data.name();
+                            });
+                            //自动提示
+                            
+                            $("#configurename").data('typeahead').source=source;
+                        }
+                    }
+                </script>
+                <div class="panel-heading">配置文件</div>
+                <div class="panel-body">
+                    <div class="row-fluid" data-bind="slideVisible: gmodels('configure').configures().length>0">
+                        <div class="span6">
+                            <form data-bind="submit: gmodels('configure').search" class="form-serach">
+                                <input id="configurename" data-bind="value: gmodels('configure').searchkey" type="text" class="input-large search-query" placeholder="please input the name to search"/>
+
+                                <button id="searchbtn" type="submit" class="btn">查找</button>
+                            </form>
+                        </div>
+                    </div>
+                        
+                    <div class="row-fluid" data-bind="slideVisible: gmodels('configure').configures().length>0">
+                        <form class="form-inline" >
+                            <div class="control-group">
+                                <input data-bind="value: gmodels('configure').configurename"  type="text" class="input-medium"  placeholder="name">
+                                <input data-bind="value: gmodels('configure').configurevalue" type="text" class="submitadd input-medium" placeholder="value">
+                                <input data-bind="value: gmodels('configure').configuredescription" type="text" class="submitadd input-medium" placeholder="description">
+                            </div>
+                            <div class="control-group" >
+                                <div class="span2"><button class="btn" data-bind="click: gmodels('configure').resetinput">重置</button></div>
+                                <div class="span2"><button id="addormodify" data-bind="click: gmodels('configure').addormodify" class="btn">添加或修改</button></div>
+                                <div class="span2"><button id="savedata" class="btn" data-bind="click: gmodels('configure').save">保存</button></div>
+                                {% raw xsrf_form_html() %}
+                            </div>
+                        </form>    
+                    </div>
+
+                    <table class="table" data-bind="slideVisible: gmodels('configure').configures().length>0">
+                        <thead>
+                            <tr><th>name</th><th>value</th><th>description</th><th>delete</th></tr>
+                        </thead>
+                        <tbody data-bind="foreach: gmodels('configure').configures">
+                            <tr>
+                                <td><label data-bind="text: name" class="text"></label></td>
+                                <td><input data-bind="value: value" type="text" class="input-medium"></td>
+                                <td><input data-bind="value: description" type="text" class="input-medium"></td>
+                                <td><a href="#" data-bind="click: function(){$parent.remove('configure',$data);}">Delete</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div data-bind="slideVisible: $.trim(gmodels('configure').areatext())!=''">
+                        <h4>请在下面文本框编辑,可以按CTRL+ENTER进行保存</h4>
+                        <textarea id="textedit" style="margin: 0px 0px 10px; width: 750px; height: 1000px;" data-bind="value: gmodels('configure').areatext"></textarea>
+                    </div>
+                </div>  
+            </div>
+            <!--end配置文件的html-->
+            <!---->
         </div>
     </div>
+    
 </div>
+<input type="hidden" id="filename">
+{% raw xsrf_form_html() %}
+<script type="text/javascript" src="{{ static_url("bootstrap/js/knockout-3.1.0.js") }}"></script>
 <script type="text/javascript">
+    //页面首次加载,或者一些事件处理的js
     $(function(){
         $('#hadoop').addClass('active');
         $('#overview').addClass('active');
+        $(".nav-stacked li").click(function(){
+            $(".nav-stacked li").each(function(){$(this).attr("class","");});
+            $(this).attr("class","active");
+        });
+        $(".search-query").typeahead({
+            source:[]
+        });
+        $("#configurename").typeahead({
+            source:[]
+        });
+        $(".search-query").keypress(function(event){
+            if(event.which==13){
+                $('#searchbtn').click();
+            }
+        });
+        $(".submitadd").keypress(function(event){
+            if(event.which==13){
+                $(this).blur();
+                $("#addormodify").click();
+            }
+        });
+        $("#textedit").keypress(function(event){
+            if(event.ctrlKey && event.which == 13 || event.which == 10){
+                $("#textedit").blur();
+                $("#savedata").click();
+            }
+        });
+        
+    });
+       
+    //管理队列Model
+    function managehostModel(){
+
+    }
+    
+    //viewmodel
+    function ViewModel(){
+        //data
+        var self=this;
+        //save the model 
+        var models={}
+        self.gmodels=function(name){
+            return models[name];
+        };
+        self.registermodel=function(name,model){
+            models[name]=model
+        }
+        
+        //reset
+        self.reset=function(){
+            for(var i in models){
+                if(models[i].reset){
+                    models[i].reset();
+                }
+            }
+        }
+        self.remove=function(name,data){
+            if(models[name].remove){
+                models[name].remove(data);
+            }            
+        }
+    }
+    //初始化ViewModel
+    $(function(){
+        var viewmodel=new ViewModel();
+        viewmodel.registermodel("hosts",new hostsmanageModel());
+        viewmodel.registermodel("configure",new configureModel());
+        viewmodel.registermodel("adduser",new adduserModel());
+        viewmodel.registermodel("overview",new OverViewModel());
+        ko.bindingHandlers.slideVisible = {
+            update: function(element, valueAccessor, allBindings) {
+                // First get the latest data that we're bound to
+                var value = valueAccessor();
+         
+                // Next, whether or not the supplied model property is observable, get its current value
+                var valueUnwrapped = ko.unwrap(value);
+         
+                // Grab some more data from another binding property
+                var duration = allBindings.get('slideDuration') || 400; // 400ms is default duration unless otherwise specified
+         
+                // Now manipulate the DOM element
+                if (valueUnwrapped == true)
+                    $(element).fadeIn(duration); // Make the element visible
+                else
+                    $(element).fadeOut(duration);   // Make the element invisible
+            }
+        };
+        $(".nav-tabs li").click(function(){
+            $(".nav-tabs .active").removeClass("active");
+            $(this).addClass("active");
+            viewmodel.reset();
+        });
+        ko.applyBindings(viewmodel);
+        $('#overview').click();
     });
 </script>
 {% module footer() %}
