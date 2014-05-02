@@ -23,6 +23,8 @@ application = tornado.web.Application([
     (r"/restart",restart),
     (r"/installcluster",installcluster),
     (r"/getinstallstate",getinstallstate),
+    (r"/geterrorhost",geterrorhost),
+    (r"/geterrorinfo/(.+)",geterrorinfo),
 ],**settings)
 
 
@@ -60,8 +62,7 @@ if __name__ == "__main__":
         
         if type(result) == type([]):
             if result[0] == 0:
-                #set username clusetername,webserver,token to the file
-                
+                #set username clusetername,webserver,token to the file                
                 sshum.setusername(options.username)
                 sm.setserver(options.webserver)
                 sm.setclustername(options.clustername)

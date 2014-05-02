@@ -71,6 +71,7 @@ class installcluster(tornado.web.RequestHandler):
         response = yield tornado.gen.Task(clien.fetch,'http://127.0.0.1:8079/installcluster')
         self.write(response.body)
         self.finish()
+
 #get the process of install
 class getinstallstate(tornado.web.RequestHandler):
     def get(self):
@@ -85,3 +86,25 @@ class getinstallstate(tornado.web.RequestHandler):
         except Exception ,e:
             logging(e)
             self.write("0")
+
+#列出不能成功安装的host使用json格式返回
+class geterrorhost(tornado.web.RequestHandler):
+    def get(self):
+        self.set_header("Content-Type","application/json")
+        if os.path.isdir("error/"):
+            self.write(json.dumps(os.listdir("error/")))
+        else:
+            self.write(json.dumps([]))
+
+#根据ip获取错误信息
+class geterrorinfo(tornado.web.RequestHandler):
+    def get(self,ip):
+        self.set_header("Content-Type","application/text")
+        if os.path.isfile("error/"+ip):
+            data=runshcommand("cat error/"+ip)
+            if data is not None:
+                self.write('\n'.join(data))
+            else:
+                self.write("")
+        else:
+            self.write("")

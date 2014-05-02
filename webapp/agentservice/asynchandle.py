@@ -45,16 +45,17 @@ class installcluster(tornado.web.RequestHandler):
                     finish+=1
                     runshcommand('echo '+str(float(finish/totals)*100)+' >done')
                     logging.info(x[0]+" scp success!")
+                    #ssh untar
+                    cmds='ssh '+user+'@'+x[0]+' "tar -zxvf '+ zipdir +' && '+clientrun+'" 2>>error/'+x[0]
+                    if runshcommand(cmds) is not None:
+                        finish+=1
+                        runshcommand('echo '+str(float(finish/totals)*100)+' >done')
+                        logging.info(x[0]+" has finished install the project")
+                    else:
+                        logging.error(x[0]+" has failed to install the project")
                 else:
                     logging.error(x[0]+" scp error!")
-                #ssh untar
-                cmds='ssh '+user+'@'+x[0]+' "tar -zxvf '+ zipdir +' && '+clientrun+'" 2>>error/'+x[0]
-                if runshcommand(cmds) is not None:
-                    finish+=1
-                    runshcommand('echo '+str(float(finish/totals)*100)+' >done')
-                    logging.info(x[0]+" has finished install the project")
-                else:
-                    logging.error(x[0]+" has failed to install the project")
+                
         except Exception, e:
             logging.error(e)        
 
@@ -62,7 +63,7 @@ class installcluster(tornado.web.RequestHandler):
             self.write("success")
         #some hosts 
         else:
-            runshcommand('rm done')
+            runshcommand('echo "-1" >done')
             message='\n'.join(runshcommand('cat error/*'))
             self.write(message)
 

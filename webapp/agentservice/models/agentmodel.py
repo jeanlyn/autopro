@@ -62,8 +62,6 @@ class serverModel():
         with open(self.portpath,'w') as f:
             f.write(port)
 
-
-
 #the model used when install
 class installModel():
     def __init__(self,clustername):

@@ -139,8 +139,7 @@ class hostsloadHandler(tornado.web.RequestHandler):
             if action == 'save':
                 data=json.loads(self.request.body)
                 string='\n'.join(['\t'.join(x.values()) for x in data])
-                hostm.save(string)
-                
+                hostm.save(string)                
                 self.write("success")
             else :
                 if self.request.files.get('uploadfile',None):

@@ -50,33 +50,95 @@ class manage(tornado.web.RequestHandler):
         self.render('manage.html',project=projects,xmls=xmls)
 
 class overview(tornado.web.RequestHandler):
-    def get(self,projectname):
+    @tornado.web.asynchronous
+    @tornado.gen.engine
+    def get(self,projectname):   
+        if self.get_secure_cookie("crtcluster") is None:
+            self.set_header("Content-Type","application/text")
+            self.write("你应该先选择集群,再进行操作!")     
         
-        #获取相应的路径信息
-        installm=installpmodel(self.get_secure_cookie("crtcluster"))
-        packegpathm=packagepathmodel(self.get_secure_cookie("crtcluster"))
-        chooseinstall=installm.installproject
-        packetsp=packegpathm.packagepath
-        yarnpath=packetsp[chooseinstall[-1]][projectname].split(',')[-1]+'/yarn-site.xml'
-        hdfspath=packetsp[chooseinstall[-1]][projectname].split(',')[-1]+'/hdfs-site.xml'
-        rtvalue={}
-        resourcemanage="yarn.resourcemanager.address"
-        nameservices="dfs.nameservices"
-        defaultFS="fs.defaultFS"
-        if os.path.isfile(yarnpath) and os.path.isfile(hdfspath):
-            yarncon=HadoopConf(yarnpath)
-            hdfscon=HadoopConf(hdfspath)
-            yarndt=yarncon.get()
-            hdfsdt=hdfscon.get()
-            if hdfsdt.get(nameservices,None) is not None:
-                rtvalue['nameservices']=hdfsdt.get(nameservices)
-            else:
-                rtvalue['nameservices']=HadoopConf(packetsp[chooseinstall[-1]][projectname].split(',')[-1]+'/core-site.xml').get().get(defaultFS)
-            rtvalue['resourcemanager']=yarndt.get(resourcemanage,"")
-            self.set_header('Content-Type','application/json')
-            self.write(json.dumps(rtvalue))
         else:
-            self.set_header('Content-Type','application/text')
-            logging.error("path error:"+yarnpath+","+hdfspath)
-            self.write("error!")
-    
+            #获取相应的路径信息
+            installm=installpmodel(self.get_secure_cookie("crtcluster"))
+            packegpathm=packagepathmodel(self.get_secure_cookie("crtcluster"))
+            chooseinstall=installm.installproject
+            packetsp=packegpathm.packagepath
+            yarnpath=packetsp[chooseinstall[-1]][projectname].split(',')[-1]+'/yarn-site.xml'
+            hdfspath=packetsp[chooseinstall[-1]][projectname].split(',')[-1]+'/hdfs-site.xml'
+            clusterpath='cluster/'+self.get_secure_cookie("crtcluster")
+            rtvalue={}
+            resourcemanage="yarn.resourcemanager.address"
+            nameservices="dfs.nameservices"
+            defaultFS="fs.defaultFS"
+            if os.path.isfile(yarnpath) and os.path.isfile(hdfspath):
+                yarncon=HadoopConf(yarnpath)
+                hdfscon=HadoopConf(hdfspath)
+                yarndt=yarncon.get()
+                hdfsdt=hdfscon.get()
+                if hdfsdt.get(nameservices,None) is not None:
+                    rtvalue['nameservices']=hdfsdt.get(nameservices)
+                else:
+                    rtvalue['nameservices']=HadoopConf(packetsp[chooseinstall[-1]][projectname].split(',')[-1]+'/core-site.xml').get().get(defaultFS)
+                rtvalue['resourcemanager']=yarndt.get(resourcemanage,"")
+                #列出安装失败的节点信息
+                clien=tornado.httpclient.AsyncHTTPClient()
+                clusterurl=cluster().getclusterurl(self.get_secure_cookie('crtcluster'))
+                response=yield tornado.gen.Task(clien.fetch,clusterurl[0]+'/geterrorhost')
+                errorhost=json.loads(response.body)
+                if len(errorhost) != 0:
+                    if os.path.isfile(clusterpath+"/hosts"):
+                        cmd="grep -E '"+"|".join(errorhost)+"' "+clusterpath+"/hosts"
+                        ips=runshcommand(cmd)
+                        #format ips:["ip\thost",......]
+                        if ips is not None:
+                            rtvalue['hosts']=[[x.split('\t')[0],x.split('\t')[1]] for x in ips]
+                    else:
+                        rtvalue['hosts']=[]
+                else:
+                    rtvalue['hosts']=[]
+                self.set_header('Content-Type','application/json')
+                self.write(json.dumps(rtvalue))
+                self.finish()
+            else:
+                self.set_header('Content-Type','application/text')
+                logging.error("path error:"+yarnpath+","+hdfspath)
+                self.write("error!")
+
+#已安装的host
+class installhost(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
+    @tornado.gen.engine
+    def get(self):
+        try:
+            #获取已安装host
+            hostsm=hostsmodel(self.get_secure_cookie("crtcluster"))
+            hosts=hostsm.hosts
+            #获取失败host
+            clien=tornado.httpclient.AsyncHTTPClient()
+            clusterurl=cluster().getclusterurl(self.get_secure_cookie('crtcluster'))
+            response=yield tornado.gen.Task(clien.fetch,clusterurl[0]+'/geterrorhost')
+            errorhost=json.loads(response.body)
+            #得到形式为[[ip,hosts,fasle]] 最后一个元素表示安装成功或者失败
+            rtvalue=map(lambda x:x+[False] if x[0] in errorhost else x+[True],hosts)
+            self.set_header("Content-Type","application/json")
+            self.write(json.dumps(rtvalue))
+            self.finish()
+
+        except Exception, e:
+            logging.error(e)
+            self.set_header("Content-Type","application/text")
+            self.write("error")
+
+class geterrorinfo(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
+    @tornado.gen.engine
+    def get(self,ip):
+        if self.get_secure_cookie('crtcluster') is None:
+            self.set_header("Content-Type","application/text")
+            return
+        clien=tornado.httpclient.AsyncHTTPClient()
+        clusterurl=cluster().getclusterurl(self.get_secure_cookie('crtcluster'))
+        response=yield tornado.gen.Task(clien.fetch,clusterurl[0]+'/geterrorinfo/'+ip)
+        self.set_header("Content-Type","application/text")
+        self.write(response.body)
+        self.finish()

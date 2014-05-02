@@ -43,6 +43,8 @@ application = tornado.web.Application([
     (r"/choosecluster/?(.*)",choosecluster),#install end
     (r"/manage",manage),
     (r"/overview/?(.*)",overview),
+    (r"/installhost.*",installhost),
+    (r"/geterrorinfo/(.+)",geterrorinfo),
 ],**settings)
 
 if __name__ == "__main__":

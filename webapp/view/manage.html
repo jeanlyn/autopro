@@ -33,13 +33,19 @@
                     //OverView model
                     function OverViewModel(){
                         var self=this;
+                        var hosts=function(ip,host){
+                            this.ip=ko.observable(ip);
+                            this.host=ko.observable(host);
+                        };
                         self.resourcemanage=ko.observable("");
                         self.nameservices=ko.observable("");
                         self.hdfsFederation=ko.observable("");
+                        self.errorhost=ko.observableArray([]);
                         self.reset=function(){
                             self.resourcemanage('');
                             self.nameservices('');
-                            self.hdfsFederation('')
+                            self.hdfsFederation('');
+                            self.errorhost([]);
                         }
                         self.getdata=function(){
                             var projectname=$(".nav-list .active a").html();
@@ -54,6 +60,12 @@
                                     self.resourcemanage(data['resourcemanager']['value']);
                                     self.nameservices(data['nameservices']['value']);
                                     self.hdfsFederation(data['nameservices']['value'].split(',').length>1?'是':'否')
+                                    //错误节点
+                                    self.errorhost(
+                                        $.map(data['hosts'],function(datas){
+                                            return new hosts(datas[0],datas[1]);
+                                        })
+                                    );
                                 }
                             });
                         }
@@ -62,6 +74,7 @@
                 </script>
                 <div class="panel-heading" >OverView</div>
                 <div class="panel-body">
+                    <h4>基本情况概览</h4>
                     <form class="form-horizontal">
                         <div class="control-group">
                             <label class="control-label">采用hdfs联盟:</label>
@@ -82,6 +95,21 @@
                             </div>
                         </div>
                     </form> 
+                    <div class="container" data-bind="visible: gmodels('overview').errorhost">
+                        <h4>安装失败host</h4>
+                        <table class="table">
+                            <thead>
+                                <th>ip</th>
+                                <th>host</th>
+                            </thead>
+                            <tbody data-bind="foreach: gmodels('overview').errorhost">
+                                <tr>
+                                    <td data-bind="text: ip"></td>
+                                    <td data-bind="text: host"></td>
+                                </tr>
+                            </tbody>                        
+                        </table>
+                    </div>
                 </div>               
             </div>
             <!--end OverView的html-->
@@ -124,7 +152,14 @@
                 <script type="text/javascript">
                     //管理host Model
                     function hostsmanageModel(){
-                        var hosts=function(ip,host){
+                        var hosts=function(ip,host,success,check){
+                            if(!arguments[3]){
+                                this.check=ko.observable(false);
+                            }
+                            else{
+                                this.check=ko.observable(check);
+                            }
+                            this.success=ko.observable(success);
                             this.ip=ko.observable(ip);
                             this.host=ko.observable(host);
                         };
@@ -193,13 +228,13 @@
                         };
                         //load data
                         self.loaddata=function(){
-                            $.getJSON('/hosts/getdata',function(datas){
+                            $.getJSON('/installhost',function(datas){
                                 if(datas=="error"){
                                     dialog("加载数据出错!");
                                 }
                                 else{
                                     var hostarry=$.map(datas,function(data){
-                                        return new hosts(data[0],data[1]);
+                                        return new hosts(data[0],data[1],data[2]);
                                     });
                                     self.hostsbind(hostarry);
                                     var source=self.hostsbind().map(function(data){
@@ -209,10 +244,33 @@
                                 }
                             });
                         }
-                        
+                        self.fade=function(element){
+                            element.style.opacity = 0;
+                            (element.style.opacity+=.1)>1?element.style.display="":setTimeout(function(element){self.fade(element)},40);
+                        }
+                        self.getinfo=function(data,element){
+                            if(data.success()==false){
+                                var input=element.parentNode.getElementsByClassName("text-error");
+                                var href='/geterrorinfo/'+data.ip(); 
+                                if(input[0].innerHTML==""){
+                                    $.get(href,function(datas){
+                                        input[0].innerHTML=datas;
+                                        $(input[0]).fadeIn();
+                                    });
+                                }
+                                else{
+                                    if($(input[0]).is(":visible")){
+                                        $(input[0]).fadeOut();
+                                    }
+                                    else{
+                                        $(input[0]).fadeIn();
+                                    }
+                                }                                
+                            }
+                        }                        
                     }
                 </script>
-                  <!-- Default panel contents -->
+                <!-- Default panel contents -->
                 <div class="panel-heading">管理host</div>
                 <div class="panel-body">
                     <div class="container">
@@ -243,11 +301,13 @@
                         <table class="table" data-bind="slideVisible: gmodels('hosts').hostsbind().length>0">
                             <thead>
                                 <tr>
+                                    <th>选择</th>
                                     <th>ip</th>
                                     <th>hosts</th>
                                     <th>操作</th>
                                 </tr>
                                 <tr>
+                                    <th></th>
                                     <th><input data-bind="value: gmodels('hosts').ip" type="text" placeholder="ip"></th>
                                     <th><input data-bind="value: gmodels('hosts').hostname" type="text" placeholder="hostname"></th>
                                     <th>
@@ -258,7 +318,11 @@
                             </thead>
                             <tbody data-bind="foreach: gmodels('hosts').hostsbind">
                                 <tr>
-                                    <td><a href="#" data-bind="text: ip" type="text"></a></td>
+                                    <td><input type="checkbox" data-bind="checked: check"></td>
+                                    <td><span class="label label-success" data-bind="if: success()">成功</span><span class="label label-important" data-bind="if not: success()">失败</span><a href="#" data-bind="text: ip,click: function(){$parent.runfunc('hosts','getinfo',$data,$element)}" type="text"></a>
+                                    <br>
+                                    <small class="text-error"></small>
+                                    </td>
                                     <td><p data-bind="text: host"></p></td>
                                     <td><a href="#" data-bind="click: function(){$parent.remove('hosts',$data);}">Delete</a></td>
                                 </tr>
@@ -528,8 +592,8 @@
             return models[name];
         };
         self.registermodel=function(name,model){
-            models[name]=model
-        }
+            models[name]=model;
+        };
         
         //reset
         self.reset=function(){
@@ -538,12 +602,19 @@
                     models[i].reset();
                 }
             }
-        }
+        };
         self.remove=function(name,data){
             if(models[name].remove){
                 models[name].remove(data);
             }            
-        }
+        };
+        self.runfunc=function(modelname,funcname,argument,element){
+            //models[modelname].
+            var run;           
+            run="models['"+modelname+"']."+funcname+"(argument,element)";
+            eval(run);
+        };
+
     }
     //初始化ViewModel
     $(function(){
